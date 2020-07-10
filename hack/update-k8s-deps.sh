@@ -8,6 +8,8 @@ export GO111MODULE=on
 export K8S_VERSION="${1:-v0.17.6}"
 
 K8S_DEPS=(
+  "k8s.io/apimachinery"
+  "k8s.io/api"
   "k8s.io/client-go"
 )
 
