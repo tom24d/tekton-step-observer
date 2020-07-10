@@ -18,7 +18,9 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-source $(git rev-parse --show-toplevel)/vendor/github.com/tektoncd/plumbing/scripts/library.sh
+REPO_ROOT_DIR=$(git rev-parse --show-toplevel)
+
+source ${REPO_ROOT_DIR}/vendor/github.com/tektoncd/plumbing/scripts/library.sh
 
 cd ${REPO_ROOT_DIR}
 
@@ -28,6 +30,7 @@ VERSION="master"
 # float forward in this repository.
 FLOATING_DEPS=(
   "knative.dev/pkg@${VERSION}"
+  "github.com/tektoncd/plumbing@${VERSION}"
 )
 
 # Parse flags to determine any we should pass to dep.
@@ -50,5 +53,11 @@ fi
 # Prune modules.
 go mod tidy
 go mod vendor
+
+rm -rf $(find vendor/ -name 'OWNERS')
+rm -rf $(find vendor/ -name 'OWNERS_ALIASES')
+rm -rf $(find vendor/ -name 'BUILD')
+rm -rf $(find vendor/ -name 'BUILD.bazel')
+rm -rf $(find vendor/ -name '*_test.go')
 
 update_licenses third_party/
