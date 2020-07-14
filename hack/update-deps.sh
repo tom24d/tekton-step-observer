@@ -31,6 +31,7 @@ VERSION="master"
 FLOATING_DEPS=(
   "knative.dev/pkg@${VERSION}"
   "github.com/tektoncd/plumbing@${VERSION}"
+  "github.com/tektoncd/pipeline@${VERSION}"
 )
 
 # Parse flags to determine any we should pass to dep.
