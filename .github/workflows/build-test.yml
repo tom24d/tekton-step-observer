@@ -57,11 +57,6 @@ jobs:
         env:
           GOPATH: /home/runner/work/
 
-#      - name: Install kntest
-#        run: go install ./kntest/cmd/kntest
-#        env:
-#          GOPATH: /home/runner/work/
-
       - name: Check out code
         uses: actions/checkout@v2
         env:
