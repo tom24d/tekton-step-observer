@@ -24,13 +24,15 @@ source ${REPO_ROOT_DIR}/vendor/github.com/tektoncd/plumbing/scripts/library.sh
 
 cd ${REPO_ROOT_DIR}
 
-VERSION="master"
+VERSION_TEKTON="master"
+VERSION_KNATIVE="release-0.16"
 
 # The list of dependencies that we track at HEAD and periodically
 # float forward in this repository.
 FLOATING_DEPS=(
-  "knative.dev/pkg@${VERSION}"
-  "github.com/tektoncd/plumbing@${VERSION}"
+  "knative.dev/pkg@${VERSION_KNATIVE}"
+  "github.com/tektoncd/plumbing@${VERSION_TEKTON}"
+  "github.com/tektoncd/pipeline@${VERSION_TEKTON}"
 )
 
 # Parse flags to determine any we should pass to dep.
