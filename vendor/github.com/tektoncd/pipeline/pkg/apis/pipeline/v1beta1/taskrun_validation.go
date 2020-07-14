@@ -23,6 +23,7 @@ import (
 
 	"github.com/tektoncd/pipeline/pkg/apis/validate"
 	"k8s.io/apimachinery/pkg/api/equality"
+	"k8s.io/apimachinery/pkg/util/sets"
 	"knative.dev/pkg/apis"
 )
 
@@ -72,6 +73,12 @@ func (ts *TaskRunSpec) Validate(ctx context.Context) *apis.FieldError {
 		return err
 	}
 
+	if ts.Status != "" {
+		if ts.Status != TaskRunSpecStatusCancelled {
+			return apis.ErrInvalidValue(fmt.Sprintf("%s should be %s", ts.Status, TaskRunSpecStatusCancelled), "spec.status")
+		}
+	}
+
 	if ts.Timeout != nil {
 		// timeout should be a valid duration of at least 0.
 		if ts.Timeout.Duration < 0 {
@@ -84,12 +91,12 @@ func (ts *TaskRunSpec) Validate(ctx context.Context) *apis.FieldError {
 
 // validateWorkspaceBindings makes sure the volumes provided for the Task's declared workspaces make sense.
 func validateWorkspaceBindings(ctx context.Context, wb []WorkspaceBinding) *apis.FieldError {
-	seen := map[string]struct{}{}
+	seen := sets.NewString()
 	for _, w := range wb {
-		if _, ok := seen[w.Name]; ok {
+		if seen.Has(w.Name) {
 			return apis.ErrMultipleOneOf("spec.workspaces.name")
 		}
-		seen[w.Name] = struct{}{}
+		seen.Insert(w.Name)
 
 		if err := w.Validate(ctx); err != nil {
 			return err
@@ -101,12 +108,12 @@ func validateWorkspaceBindings(ctx context.Context, wb []WorkspaceBinding) *apis
 
 func validateParameters(params []Param) *apis.FieldError {
 	// Template must not duplicate parameter names.
-	seen := map[string]struct{}{}
+	seen := sets.NewString()
 	for _, p := range params {
-		if _, ok := seen[strings.ToLower(p.Name)]; ok {
+		if seen.Has(strings.ToLower(p.Name)) {
 			return apis.ErrMultipleOneOf("spec.params.name")
 		}
-		seen[p.Name] = struct{}{}
+		seen.Insert(p.Name)
 	}
 	return nil
 }

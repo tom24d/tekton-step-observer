@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Tekton Authors
+Copyright 2020 The Tekton Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ type TektonV1alpha1Interface interface {
 	ConditionsGetter
 	PipelinesGetter
 	PipelineRunsGetter
+	RunsGetter
 	TasksGetter
 	TaskRunsGetter
 }
@@ -53,6 +54,10 @@ func (c *TektonV1alpha1Client) Pipelines(namespace string) PipelineInterface {
 
 func (c *TektonV1alpha1Client) PipelineRuns(namespace string) PipelineRunInterface {
 	return newPipelineRuns(c, namespace)
+}
+
+func (c *TektonV1alpha1Client) Runs(namespace string) RunInterface {
+	return newRuns(c, namespace)
 }
 
 func (c *TektonV1alpha1Client) Tasks(namespace string) TaskInterface {

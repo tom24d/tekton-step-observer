@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Tekton Authors
+Copyright 2020 The Tekton Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ limitations under the License.
 package factory
 
 import (
-	"context"
+	context "context"
 
 	externalversions "github.com/tektoncd/pipeline/pkg/client/informers/externalversions"
 	client "github.com/tektoncd/pipeline/pkg/client/injection/client"

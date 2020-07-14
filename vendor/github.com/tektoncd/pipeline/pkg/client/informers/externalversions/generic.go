@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Tekton Authors
+Copyright 2020 The Tekton Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -62,6 +62,8 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Tekton().V1alpha1().Pipelines().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("pipelineruns"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Tekton().V1alpha1().PipelineRuns().Informer()}, nil
+	case v1alpha1.SchemeGroupVersion.WithResource("runs"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Tekton().V1alpha1().Runs().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("tasks"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Tekton().V1alpha1().Tasks().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("taskruns"):
