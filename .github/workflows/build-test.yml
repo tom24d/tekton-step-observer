@@ -40,7 +40,7 @@ jobs:
 #        run: go build -tags e2e ./test/...
 #
   build-test:
-    name: Presubmit Build Test
+    name: Build Test
     runs-on: ubuntu-latest
     steps:
 
