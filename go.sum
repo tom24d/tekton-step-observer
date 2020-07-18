@@ -780,12 +780,12 @@ github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69
 github.com/syndtr/gocapability v0.0.0-20170704070218-db04d3cc01c8/go.mod h1:hkRG7XYTFWNJGYcbNJQlaLq0fg1yr4J4t/NcTQtrfww=
 github.com/tektoncd/pipeline v0.11.0 h1:kGeWm53R5ggajD/L2KU8kcsZ2lVd4ruN3kdqK1A/NwQ=
 github.com/tektoncd/pipeline v0.11.0/go.mod h1:hlkH32S92+/UODROH0dmxzyuMxfRFp/Nc3e29MewLn8=
-github.com/tektoncd/pipeline v0.14.1-0.20200713190658-8e9230d68634 h1:+bWaKB7wvJszO9nHwR4fn42c/1QHrgBrj7duSQb4+no=
-github.com/tektoncd/pipeline v0.14.1-0.20200713190658-8e9230d68634/go.mod h1:mROf0TbK23X3eyQ0QGP+ZemqVzetpi/nb1rD8qJrM+0=
+github.com/tektoncd/pipeline v0.14.1-0.20200717213559-935aecfae56d h1:6zKGPRzBs5npz0uKI8ebdBh+ksS7qsAj1Tk30PRa7Ko=
+github.com/tektoncd/pipeline v0.14.1-0.20200717213559-935aecfae56d/go.mod h1:I66/dcGiMbt/r0IHAI54KPx/ES58xG616ZdpP0m5iJs=
 github.com/tektoncd/plumbing v0.0.0-20200217163359-cd0db6e567d2/go.mod h1:QZHgU07PRBTRF6N57w4+ApRu8OgfYLFNqCDlfEZaD9Y=
 github.com/tektoncd/plumbing v0.0.0-20200430135134-e53521e1d887/go.mod h1:cZPJIeTIoP7UPTxQyTQLs7VE1TiXJSNj0te+If4Q+jI=
-github.com/tektoncd/plumbing v0.0.0-20200710153057-58cb2a35a1d4 h1:kDftRNYQBOPAZG/mkVp2W8uGwRpf5SrFXHGYeRpf1p8=
-github.com/tektoncd/plumbing v0.0.0-20200710153057-58cb2a35a1d4/go.mod h1:cZPJIeTIoP7UPTxQyTQLs7VE1TiXJSNj0te+If4Q+jI=
+github.com/tektoncd/plumbing v0.0.0-20200717131500-b19233f958a4 h1:jaoR1CId0gHd3AsxHDXfRGo4P2ajwCcXBIMwYA1NeJw=
+github.com/tektoncd/plumbing v0.0.0-20200717131500-b19233f958a4/go.mod h1:cZPJIeTIoP7UPTxQyTQLs7VE1TiXJSNj0te+If4Q+jI=
 github.com/tektoncd/plumbing/pipelinerun-logs v0.0.0-20191206114338-712d544c2c21/go.mod h1:S62EUWtqmejjJgUMOGB1CCCHRp6C706laH06BoALkzU=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20170815181823-89b8d40f7ca8/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
@@ -1297,7 +1297,6 @@ k8s.io/utils v0.0.0-20200124190032-861946025e34/go.mod h1:sZAwmy6armz5eXlNoLmJcl
 knative.dev/caching v0.0.0-20200116200605-67bca2c83dfa/go.mod h1:dHXFU6CGlLlbzaWc32g80cR92iuBSpsslDNBWI8C7eg=
 knative.dev/eventing-contrib v0.11.2/go.mod h1:SnXZgSGgMSMLNFTwTnpaOH7hXDzTFtw0J8OmHflNx3g=
 knative.dev/pkg v0.0.0-20200207155214-fef852970f43/go.mod h1:pgODObA1dTyhNoFxPZTTjNWfx6F0aKsKzn+vaT9XO/Q=
-knative.dev/pkg v0.0.0-20200630170034-2c1a029eb97f/go.mod h1:7T15JzvjKXWnvIKcohz4brrsVq8jvwAcJwWY9xigAc0=
 knative.dev/pkg v0.0.0-20200702222342-ea4d6e985ba0 h1:+k2ADqygEgy5BIEahUUEgdY3LbQkaRxbObIO1ZjQswE=
 knative.dev/pkg v0.0.0-20200702222342-ea4d6e985ba0/go.mod h1:7T15JzvjKXWnvIKcohz4brrsVq8jvwAcJwWY9xigAc0=
 knative.dev/test-infra v0.0.0-20200630141629-15f40fe97047/go.mod h1:30tMsI1VXrG2m4ut7CFZbLg1VbcRsslPfGU+GWILm6E=
