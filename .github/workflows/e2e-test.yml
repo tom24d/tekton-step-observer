@@ -34,30 +34,14 @@ jobs:
           apiVersion: kind.x-k8s.io/v1alpha4
           nodes:
           - role: control-plane
-            image: kindest/node:v1.16.4@sha256:b91a2c2317a000f3a783489dfb755064177dbc3a0b2f4147d50f04825d016f55
-            kubeadmConfigPatches:
-            - |
-              kind: InitConfiguration
-              nodeRegistration:
-                kubeletExtraArgs:
-                  node-labels: "ingress-ready=true"
+            image: kindest/node:v1.16.9@sha256:7175872357bc85847ec4b1aba46ed1d12fa054c83ac7a8a11f5c268957fd5765
             extraPortMappings:
-            - containerPort: 80
+            - containerPort: 31080
               hostPort: 80
               protocol: TCP
-              listenAddress: "127.0.0.1"
-            - containerPort: 443
+            - containerPort: 31443
               hostPort: 443
               protocol: TCP
-              listenAddress: "127.0.0.1"
-          - role: worker
-            image: kindest/node:v1.16.4@sha256:b91a2c2317a000f3a783489dfb755064177dbc3a0b2f4147d50f04825d016f55
-            kubeadmConfigPatches:
-              - |
-                kind: JoinConfiguration
-                nodeRegistration:
-                  kubeletExtraArgs:
-                    system-reserved: memory=6Gi
           EOF
         env:
           GOPATH: /home/runner/work/
