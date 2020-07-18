@@ -139,7 +139,7 @@ github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
 # github.com/spf13/pflag v1.0.5
 github.com/spf13/pflag
-# github.com/tektoncd/pipeline v0.14.1-0.20200713190658-8e9230d68634
+# github.com/tektoncd/pipeline v0.14.1-0.20200717213559-935aecfae56d
 ## explicit
 github.com/tektoncd/pipeline/pkg/apis/config
 github.com/tektoncd/pipeline/pkg/apis/pipeline
@@ -166,7 +166,7 @@ github.com/tektoncd/pipeline/pkg/contexts
 github.com/tektoncd/pipeline/pkg/list
 github.com/tektoncd/pipeline/pkg/reconciler/pipeline/dag
 github.com/tektoncd/pipeline/pkg/substitution
-# github.com/tektoncd/plumbing v0.0.0-20200710153057-58cb2a35a1d4
+# github.com/tektoncd/plumbing v0.0.0-20200717131500-b19233f958a4
 ## explicit
 github.com/tektoncd/plumbing
 github.com/tektoncd/plumbing/scripts
