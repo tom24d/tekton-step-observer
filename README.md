@@ -7,10 +7,10 @@ This plugin creates a controller to watch TaskRun/Pod(TBD), then send CloudEvent
 
 Supported CloudEvents event type are:
 ```
-dev.tekton.event.step.started.v1  
-dev.tekton.event.step.failed.v1
-dev.tekton.event.step.succeeded.v1
-dev.tekton.event.step.skipped.v1
+dev.tekton.event.plugin.step.started.v1  
+dev.tekton.event.plugin.step.failed.v1
+dev.tekton.event.plugin.step.succeeded.v1
+dev.tekton.event.plugin.step.skipped.v1
 ```
 
 The shape of CloudEvent data is:
