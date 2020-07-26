@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	component = "step-observe-reconciler"
+	component = "step-observer"
 )
 
 func main() {

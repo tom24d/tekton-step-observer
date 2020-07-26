@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	controllerName = "step-observe-reconciler"
+	controllerName = "step-observer"
 )
 
 func NewController(ctx context.Context, cm configmap.Watcher) *controller.Impl {
