@@ -2,6 +2,8 @@ package resources
 
 import (
 	"context"
+	"time"
+
 	corev1 "k8s.io/api/core/v1"
 
 	"knative.dev/pkg/logging"
@@ -42,6 +44,7 @@ func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginE
 		return
 	}
 	ctx = cloudevents.ContextWithTarget(ctx, configs.Defaults.DefaultCloudEventsSink)
+	ctx = cloudevents.ContextWithRetriesExponentialBackoff(ctx, 10*time.Millisecond, 10)
 	cli := tektoncloudevent.Get(ctx)
 
 	event := cloudevents.NewEvent()
