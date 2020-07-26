@@ -36,7 +36,6 @@ func (s *EmissionStatuses) GetStatus(stepName string) (*EmissionStatus, error) {
 	return nil, fmt.Errorf("no reported struct contained")
 }
 
-
 type EmissionStatus struct {
 	Name    string                  `json:"name"`
 	Emitted []TektonPluginEventType `json:"emitted"`

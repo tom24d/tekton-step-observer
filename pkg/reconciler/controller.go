@@ -29,10 +29,10 @@ func NewController(ctx context.Context, cm configmap.Watcher) *controller.Impl {
 	configStore.WatchConfigs(cm)
 
 	r := &Reconciler{
-		taskRunLister: taskrunInformer.Lister(),
-		pipelineClient: pipelineclient.Get(ctx),
-		kubeClientSet: kubeclient.Get(ctx),
-		configStore: configStore,
+		taskRunLister:    taskrunInformer.Lister(),
+		pipelineClient:   pipelineclient.Get(ctx),
+		kubeClientSet:    kubeclient.Get(ctx),
+		configStore:      configStore,
 		cloudEventClient: cloudeventclient.Get(ctx),
 	}
 
@@ -42,7 +42,7 @@ func NewController(ctx context.Context, cm configmap.Watcher) *controller.Impl {
 		AddFunc: impl.Enqueue,
 		UpdateFunc: func(first, second interface{}) {
 			// TODO remove this if the problem solved. See: https://github.com/tom24d/step-observe-controller/issues/8
-			impl.EnqueueAfter(second, 100 * time.Millisecond)
+			impl.EnqueueAfter(second, 100*time.Millisecond)
 		},
 	})
 

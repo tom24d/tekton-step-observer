@@ -33,7 +33,7 @@ const (
 type Reconciler struct {
 	taskRunLister    listers.TaskRunLister
 	pipelineClient   clientset.Interface
-	kubeClientSet kubernetes.Interface
+	kubeClientSet    kubernetes.Interface
 	configStore      reconciler.ConfigStore
 	cloudEventClient cloudevent.CEClient
 }
