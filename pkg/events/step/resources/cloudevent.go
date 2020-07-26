@@ -2,11 +2,13 @@ package resources
 
 import (
 	"context"
-	"fmt"
 	corev1 "k8s.io/api/core/v1"
+
+	"knative.dev/pkg/logging"
 
 	cloudevents "github.com/cloudevents/sdk-go/v2"
 
+	"github.com/tektoncd/pipeline/pkg/apis/config"
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
 	tektoncloudevent "github.com/tektoncd/pipeline/pkg/reconciler/events/cloudevent"
 )
@@ -31,7 +33,15 @@ type TektonStepCloudEvent struct {
 	Detail *v1beta1.Step      `json:"detail,omitempty"`
 }
 
-func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginEventType) error {
+func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginEventType) {
+	logger := logging.FromContext(ctx)
+	configs := config.FromContextOrDefaults(ctx)
+	sendCloudEvents := (configs.Defaults.DefaultCloudEventsSink != "")
+	if !sendCloudEvents {
+		logger.Infof("EMIT is no-op: %v", d)
+		return
+	}
+	ctx = cloudevents.ContextWithTarget(ctx, configs.Defaults.DefaultCloudEventsSink)
 	cli := tektoncloudevent.Get(ctx)
 
 	event := cloudevents.NewEvent()
@@ -39,11 +49,10 @@ func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginE
 	event.SetSource("tbd")
 	err := event.SetData(cloudevents.ApplicationJSON, d)
 	if err != nil {
-		return fmt.Errorf("failed to marshal payload :%v", err)
+		logger.Errorf("failed to marshal payload :%v", err)
 	}
 
 	if result := cli.Send(ctx, event); cloudevents.IsUndelivered(result) {
-		return fmt.Errorf("failed to send CloudEvent: %v", result)
+		logger.Errorf("failed to send CloudEvent: %v", result)
 	}
-	return nil
 }
