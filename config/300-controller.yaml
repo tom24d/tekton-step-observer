@@ -40,7 +40,7 @@ spec:
       serviceAccountName: tekton-step-observe-reconciler
       containers:
         - name: tekton-step-observe-reconciler
-          image: ko://github.com/tom24d/step-observe-reconciler/cmd/reconciler
+          image: ko://github.com/tom24d/step-observe-controller/cmd/controller
           volumeMounts:
             - name: config-logging
               mountPath: /etc/config-logging
