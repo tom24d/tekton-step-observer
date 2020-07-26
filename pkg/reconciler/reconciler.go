@@ -167,9 +167,9 @@ func (r *Reconciler) ensureEventEmitted(
 			Detail: &s1[index],
 			State:  &s2[index],
 			Pod:    p,
-			Logs:   log,
+			Log:    log,
 		}
-		go data.Emit(ctx)
+		go data.Emit(ctx, eventType)
 		err = emissionStatus.MarkEvent(eventType)
 		logger.Infof("EVENT EMISSION step: %s, type: %v, annotation: %v", name, eventType, annotation)
 		if err != nil {

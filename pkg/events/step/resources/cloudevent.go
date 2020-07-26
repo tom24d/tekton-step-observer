@@ -2,11 +2,13 @@ package resources
 
 import (
 	"context"
+	"fmt"
 	corev1 "k8s.io/api/core/v1"
 
 	cloudevents "github.com/cloudevents/sdk-go/v2"
 
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
+	tektoncloudevent "github.com/tektoncd/pipeline/pkg/reconciler/events/cloudevent"
 )
 
 type TektonPluginEventType string
@@ -24,21 +26,24 @@ func (c TektonPluginEventType) String() string {
 
 type TektonStepCloudEvent struct {
 	Pod    *corev1.Pod        `json:"pod,omitempty"`
-	Logs   string             `json:"logs,omitempty"`
+	Log    string             `json:"log,omitempty"`
 	State  *v1beta1.StepState `json:"state,omitempty"`
 	Detail *v1beta1.Step      `json:"detail,omitempty"`
 }
 
-func (d *TektonStepCloudEvent) Emit(ctx context.Context) {}
+func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginEventType) error {
+	cli := tektoncloudevent.Get(ctx)
 
-func NewTektonStepCloudEvent(ctx context.Context, run *v1beta1.TaskRun, eventType TektonPluginEventType) TektonStepCloudEvent {
-	return TektonStepCloudEvent{}
+	event := cloudevents.NewEvent()
+	event.SetType(eventType.String())
+	event.SetSource("tbd")
+	err := event.SetData(cloudevents.ApplicationJSON, d)
+	if err != nil {
+		return fmt.Errorf("failed to marshal payload :%v", err)
+	}
+
+	if result := cli.Send(ctx, event); cloudevents.IsUndelivered(result) {
+		return fmt.Errorf("failed to send CloudEvent: %v", result)
+	}
+	return nil
 }
-
-func EventForStep(run *v1beta1.TaskRun, eventType TektonPluginEventType) (*cloudevents.Event, error) {
-	return nil, nil
-}
-
-func getPod() {}
-
-func getLogs() {}
