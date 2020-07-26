@@ -27,8 +27,8 @@ jobs:
 #      - name: Check out code into the Go module directory
 #        uses: actions/checkout@v2
 #
-#      - name: Build test for controller with ko
-#        run: ko publish ./cmd/controller -L
+#      - name: Build test for reconciler with ko
+#        run: ko publish ./cmd/reconciler -L
 #
 #      - name: Build test for webhook with ko
 #        run: ko publish ./cmd/webhook -L

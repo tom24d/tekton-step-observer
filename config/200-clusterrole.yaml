@@ -1,7 +1,7 @@
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: tekton-step-observe-controller-cluster-access
+  name: tekton-step-observe-reconciler-cluster-access
   labels:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: default

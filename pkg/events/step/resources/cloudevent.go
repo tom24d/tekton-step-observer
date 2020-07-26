@@ -1,6 +1,7 @@
 package resources
 
 import (
+	"context"
 	corev1 "k8s.io/api/core/v1"
 
 	cloudevents "github.com/cloudevents/sdk-go/v2"
@@ -28,7 +29,9 @@ type TektonStepCloudEvent struct {
 	Detail *v1beta1.Step      `json:"detail,omitempty"`
 }
 
-func NewTektonCloudEventStepCloudEvent(run *v1beta1.TaskRun, eventType TektonPluginEventType) TektonStepCloudEvent {
+func (d *TektonStepCloudEvent) Emit(ctx context.Context) {}
+
+func NewTektonStepCloudEvent(ctx context.Context, run *v1beta1.TaskRun, eventType TektonPluginEventType) TektonStepCloudEvent {
 	return TektonStepCloudEvent{}
 }
 

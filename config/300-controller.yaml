@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tekton-step-observe-controller
+  name: tekton-step-observe-reconciler
   namespace: tekton-pipelines
   labels:
     app.kubernetes.io/name: step-observe-controller
@@ -37,10 +37,10 @@ spec:
         app: tekton-step-observe-controller
         version: "devel"
     spec:
-      serviceAccountName: tekton-step-observe-controller
+      serviceAccountName: tekton-step-observe-reconciler
       containers:
-        - name: tekton-step-observe-controller
-          image: ko://github.com/tom24d/step-observe-controller/cmd/controller
+        - name: tekton-step-observe-reconciler
+          image: ko://github.com/tom24d/step-observe-reconciler/cmd/reconciler
           volumeMounts:
             - name: config-logging
               mountPath: /etc/config-logging
@@ -50,7 +50,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
             # If you are changing these names, you will also need to update
-            # the controller's Role in 200-role.yaml to include the new
+            # the reconciler's Role in 200-role.yaml to include the new
             # values in the "configmaps" "get" rule.
             - name: CONFIG_LOGGING_NAME
               value: config-logging
@@ -83,7 +83,7 @@ metadata:
     # labels below are related to istio and should not be used for resource lookup
     app: tekton-step-observe-controller
     version: "devel"
-  name: tekton-step-observe-controller
+  name: tekton-step-observe-reconciler
   namespace: tekton-pipelines
 spec:
   ports:
@@ -92,7 +92,7 @@ spec:
       protocol: TCP
       targetPort: 9090
   selector:
-    app.kubernetes.io/name: controller
+    app.kubernetes.io/name: reconciler
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: default
     app.kubernetes.io/part-of: tekton-pipelines
