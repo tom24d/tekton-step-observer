@@ -12,7 +12,6 @@ import (
 	"k8s.io/client-go/tools/cache"
 
 	kubeclient "knative.dev/pkg/client/injection/kube/client"
-	podinformer "knative.dev/pkg/client/injection/kube/informers/core/v1/pod"
 	"knative.dev/pkg/configmap"
 	"knative.dev/pkg/controller"
 	"knative.dev/pkg/logging"
@@ -25,7 +24,6 @@ const (
 func NewController(ctx context.Context, cm configmap.Watcher) *controller.Impl {
 	logger := logging.FromContext(ctx)
 	taskrunInformer := taskruninformer.Get(ctx)
-	_ = podinformer.Get(ctx)
 
 	configStore := config.NewStore(logger.Named("step-observer"))
 	configStore.WatchConfigs(cm)
