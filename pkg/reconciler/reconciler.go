@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 
+	multierr "github.com/hashicorp/go-multierror"
 	"go.uber.org/zap"
 
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
@@ -87,40 +87,8 @@ func (r *Reconciler) reconcile(ctx context.Context, taskrun *v1beta1.TaskRun) er
 		return err
 	}
 
-	for i, step := range stepresource.GetStepStatuses(taskrun) {
-		// start
-		if step.ContainerState.Running != nil {
-			// (Running) emit&mark started if i=0
-			if i == 0 && !taskrun.Status.StartTime.IsZero() {
-				r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepStarted, taskrun, i)
-			}
-		}
-		// emit&mark started if i!=0 && i-1 step marked as succeeded
-		if i != 0 && sent.IsMarked(stepresource.GetStepStatuses(taskrun)[i-1].Name, resources.CloudEventTypeStepSucceeded) {
-			r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepStarted, taskrun, i)
-		}
-
-		if step.ContainerState.Terminated != nil {
-			// skipped
-			// (Terminated) emit&mark skipped if i!=0 && i-1 step marked as failed||skipped,
-			// then continue to avoid being considered as failure
-			if i != 0 &&
-				(sent.IsMarked(stepresource.GetStepStatuses(taskrun)[i-1].Name, resources.CloudEventTypeStepFailed) ||
-					sent.IsMarked(stepresource.GetStepStatuses(taskrun)[i-1].Name, resources.CloudEventTypeStepSkipped)) {
-
-				r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepSkipped, taskrun, i)
-				continue
-			}
-			// succeeded
-			// (Terminated) emit&mark succeeded if exit code is 0
-			if step.Terminated.ExitCode == 0 {
-				r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepSucceeded, taskrun, i)
-			} else {
-				// failure
-				// (Terminated) emit&mark failed if exit code is not 0
-				r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepFailed, taskrun, i)
-			}
-		}
+	if e := r.reconcileSteps(ctx, sent, taskrun); e != nil {
+		return e
 	}
 
 	// TODO proper reconcileErr handling
@@ -134,6 +102,47 @@ func (r *Reconciler) reconcile(ctx context.Context, taskrun *v1beta1.TaskRun) er
 		logger.Errorf("failed to PATCH taskrun: %v", err)
 	}
 	return nil
+}
+
+func (r *Reconciler) reconcileSteps(ctx context.Context, sent *resources.EmissionStatuses, taskrun *v1beta1.TaskRun) error {
+	var errs *multierr.Error
+	for i, step := range stepresource.GetStepStatuses(taskrun) {
+		// start
+		if step.ContainerState.Running != nil {
+			// (Running) emit&mark started if i=0
+			if i == 0 && !taskrun.Status.StartTime.IsZero() {
+				errs = multierr.Append(r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepStarted, taskrun, i))
+			}
+		}
+		// emit&mark started if i!=0 && i-1 step marked as succeeded
+		if i != 0 && sent.IsMarked(stepresource.GetStepStatuses(taskrun)[i-1].Name, resources.CloudEventTypeStepSucceeded) {
+			errs = multierr.Append(r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepStarted, taskrun, i))
+		}
+
+		if step.ContainerState.Terminated != nil {
+			// skipped
+			// (Terminated) emit&mark skipped if i!=0 && i-1 step marked as failed||skipped,
+			// then continue to avoid being considered as failure
+			if i != 0 &&
+				(sent.IsMarked(stepresource.GetStepStatuses(taskrun)[i-1].Name, resources.CloudEventTypeStepFailed) ||
+					sent.IsMarked(stepresource.GetStepStatuses(taskrun)[i-1].Name, resources.CloudEventTypeStepSkipped)) {
+
+				errs = multierr.Append(r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepSkipped, taskrun, i))
+				continue
+			}
+			// succeeded
+			// (Terminated) emit&mark succeeded if exit code is 0
+			if step.Terminated.ExitCode == 0 {
+				errs = multierr.Append(r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepSucceeded, taskrun, i))
+			} else {
+				// failure
+				// (Terminated) emit&mark failed if exit code is not 0
+				errs = multierr.Append(r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepFailed, taskrun, i))
+			}
+		}
+	}
+
+	return errs.ErrorOrNil()
 }
 
 func (r *Reconciler) ensureEventEmitted(
@@ -152,19 +161,20 @@ func (r *Reconciler) ensureEventEmitted(
 
 	// no emission if already marked as sent
 	if !emissionStatus.IsMarked(eventType) {
-		p, err := r.getPod(run)
-		if err != nil {
-			return err
-		}
 		log, err := r.getStepLog(run, index)
 		if err != nil {
 			return err
 		}
 		data := resources.TektonStepCloudEvent{
-			Detail: &s1[index],
-			State:  &s2[index],
-			Pod:    p,
-			Log:    log,
+			Step:      &s1[index],
+			StepState: &s2[index],
+			PodRef: &corev1.ObjectReference{
+				APIVersion: "v1",
+				Kind:       "Pod",
+				Name:       run.Status.PodName,
+				Namespace:  run.Namespace,
+			},
+			Log: log,
 		}
 		go data.Emit(ctx, eventType)
 		err = emissionStatus.MarkEvent(eventType)
@@ -216,8 +226,4 @@ func (r *Reconciler) getStepLog(run *v1beta1.TaskRun, i int) (string, error) {
 	result := r.kubeClientSet.CoreV1().Pods(run.Namespace).GetLogs(podName, logOpt).Do()
 	log, err := result.Raw()
 	return fmt.Sprintf("%s", log), err
-}
-
-func (r *Reconciler) getPod(run *v1beta1.TaskRun) (*corev1.Pod, error) {
-	return r.kubeClientSet.CoreV1().Pods(run.Namespace).Get(run.Status.PodName, metav1.GetOptions{})
 }

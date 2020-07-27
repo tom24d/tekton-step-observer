@@ -19,10 +19,15 @@ import (
 
 func TestEmit(t *testing.T) {
 	eventData := TektonStepCloudEvent{
-		Pod:    &corev1.Pod{},
-		Log:    "this is log",
-		State:  &v1beta1.StepState{},
-		Detail: &v1beta1.Step{},
+		PodRef: &corev1.ObjectReference{
+			APIVersion: "v1",
+			Kind:       "Pod",
+			Name:       "test-name",
+			Namespace:  "test-namespace",
+		},
+		Log:       "this is log",
+		Step:      &v1beta1.Step{},
+		StepState: &v1beta1.StepState{},
 	}
 
 	eventTypes := []TektonPluginEventType{
@@ -72,7 +77,7 @@ func TestEmit(t *testing.T) {
 				ctx = config.ToContext(ctx, cfg)
 
 				_ = controller.GetEventRecorder(ctx).(*record.FakeRecorder)
-				eventData.Emit(ctx, et)
+				go eventData.Emit(ctx, et)
 				//if err := checkEvents(t, recorder, tc.name, tc.wantEvent); err != nil {
 				//	t.Fatalf(err.Error())
 				//}

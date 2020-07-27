@@ -29,10 +29,10 @@ func (c TektonPluginEventType) String() string {
 }
 
 type TektonStepCloudEvent struct {
-	Pod    *corev1.Pod        `json:"pod,omitempty"`
-	Log    string             `json:"log,omitempty"`
-	State  *v1beta1.StepState `json:"state,omitempty"`
-	Detail *v1beta1.Step      `json:"detail,omitempty"`
+	PodRef    *corev1.ObjectReference `json:"podRef,omitempty"`
+	Log       string                  `json:"log,omitempty"` // TODO evaluate the security risk.
+	Step      *v1beta1.Step           `json:"step,omitempty"`
+	StepState *v1beta1.StepState      `json:"stepState,omitempty"`
 }
 
 func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginEventType) {
@@ -40,7 +40,6 @@ func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginE
 	configs := config.FromContextOrDefaults(ctx)
 	sendCloudEvents := (configs.Defaults.DefaultCloudEventsSink != "")
 	if !sendCloudEvents {
-		logger.Infof("EMIT is no-op: %v", d.Detail.Name)//TODO
 		return
 	}
 	ctx = cloudevents.ContextWithTarget(ctx, configs.Defaults.DefaultCloudEventsSink)
@@ -55,7 +54,7 @@ func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginE
 		logger.Errorf("failed to marshal payload :%v", err)
 	}
 
-	if result := cli.Send(ctx, event); cloudevents.IsUndelivered(result) {
+	if result := cli.Send(ctx, event); !cloudevents.IsACK(result) {
 		logger.Errorf("failed to send CloudEvent: %v", result)
 	}
 }
