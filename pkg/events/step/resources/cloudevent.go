@@ -40,7 +40,7 @@ func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginE
 	configs := config.FromContextOrDefaults(ctx)
 	sendCloudEvents := (configs.Defaults.DefaultCloudEventsSink != "")
 	if !sendCloudEvents {
-		logger.Infof("EMIT is no-op: %v", d)
+		logger.Infof("EMIT is no-op: %v", d.Detail.Name)//TODO
 		return
 	}
 	ctx = cloudevents.ContextWithTarget(ctx, configs.Defaults.DefaultCloudEventsSink)
@@ -49,7 +49,7 @@ func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginE
 
 	event := cloudevents.NewEvent()
 	event.SetType(eventType.String())
-	event.SetSource("tbd")
+	event.SetSource("TBD")
 	err := event.SetData(cloudevents.ApplicationJSON, d)
 	if err != nil {
 		logger.Errorf("failed to marshal payload :%v", err)

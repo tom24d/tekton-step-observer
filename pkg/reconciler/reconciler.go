@@ -42,6 +42,7 @@ type Reconciler struct {
 // This reconciler does not change any spec/status. All info is stored as json in the metadata.annotation
 func (r *Reconciler) Reconcile(ctx context.Context, key string) error {
 	logger := logging.FromContext(ctx)
+	ctx = r.configStore.ToContext(ctx)
 	ctx = cloudevent.ToContext(ctx, r.cloudEventClient)
 
 	namespace, name, err := cache.SplitMetaNamespaceKey(key)
@@ -75,8 +76,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, key string) error {
 // ReconcileStepEvent is entry point to reconcile taskrun to determine whether it should emit CloudEvent.
 func (r *Reconciler) reconcile(ctx context.Context, taskrun *v1beta1.TaskRun) error {
 	logger := logging.FromContext(ctx)
-	if taskrun.Status.TaskSpec == nil ||
-		len(stepresource.GetSteps(taskrun)) < 1 {
+	if taskrun.Status.TaskSpec == nil || len(stepresource.GetSteps(taskrun)) < 1 {
 		logger.Infof("step events emission skipped as no step in taskrun: %s", taskrun.Name)
 		return nil
 	}
@@ -84,9 +84,8 @@ func (r *Reconciler) reconcile(ctx context.Context, taskrun *v1beta1.TaskRun) er
 	sent, err := initializeAnnotation(taskrun)
 	if err != nil {
 		logger.Fatalf("failed to initialize annotation: %v", err)
-		return nil
+		return err
 	}
-	logger.Infof("RECEIVED annotation: %s, annotation in the run: %v", sent, taskrun.Annotations)
 
 	for i, step := range stepresource.GetStepStatuses(taskrun) {
 		// start
@@ -121,7 +120,6 @@ func (r *Reconciler) reconcile(ctx context.Context, taskrun *v1beta1.TaskRun) er
 				// (Terminated) emit&mark failed if exit code is not 0
 				r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepFailed, taskrun, i)
 			}
-
 		}
 	}
 
@@ -141,14 +139,13 @@ func (r *Reconciler) reconcile(ctx context.Context, taskrun *v1beta1.TaskRun) er
 func (r *Reconciler) ensureEventEmitted(
 	ctx context.Context, annotation *resources.EmissionStatuses, eventType resources.TektonPluginEventType,
 	run *v1beta1.TaskRun, index int,
-) {
+) error {
 	logger := logging.FromContext(ctx)
 
 	name := stepresource.GetSteps(run)[index].Name
 	emissionStatus, err := annotation.GetStatus(name)
 	if err != nil {
-		logger.Fatalf("status of step: %s not found", name)
-		return
+		return err
 	}
 	s1 := stepresource.GetSteps(run)
 	s2 := stepresource.GetStepStatuses(run)
@@ -157,11 +154,11 @@ func (r *Reconciler) ensureEventEmitted(
 	if !emissionStatus.IsMarked(eventType) {
 		p, err := r.getPod(run)
 		if err != nil {
-			return
+			return err
 		}
 		log, err := r.getStepLog(run, index)
 		if err != nil {
-			return
+			return err
 		}
 		data := resources.TektonStepCloudEvent{
 			Detail: &s1[index],
@@ -173,10 +170,10 @@ func (r *Reconciler) ensureEventEmitted(
 		err = emissionStatus.MarkEvent(eventType)
 		logger.Infof("EVENT EMISSION step: %s, type: %v, annotation: %v", name, eventType, annotation)
 		if err != nil {
-			logger.Fatalf("error occured at step-%s: %v", name, err)
+			return err
 		}
-		return
 	}
+	return nil
 }
 
 func initializeAnnotation(run *v1beta1.TaskRun) (*resources.EmissionStatuses, error) {
@@ -222,6 +219,5 @@ func (r *Reconciler) getStepLog(run *v1beta1.TaskRun, i int) (string, error) {
 }
 
 func (r *Reconciler) getPod(run *v1beta1.TaskRun) (*corev1.Pod, error) {
-	ref := run.GetBuildPodRef()
-	return r.kubeClientSet.CoreV1().Pods(ref.Namespace).Get(ref.Name, metav1.GetOptions{})
+	return r.kubeClientSet.CoreV1().Pods(run.Namespace).Get(run.Status.PodName, metav1.GetOptions{})
 }
