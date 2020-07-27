@@ -1,11 +1,18 @@
 package resources
 
 import (
+	"context"
+	"time"
+
 	corev1 "k8s.io/api/core/v1"
+
+	"knative.dev/pkg/logging"
 
 	cloudevents "github.com/cloudevents/sdk-go/v2"
 
+	"github.com/tektoncd/pipeline/pkg/apis/config"
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
+	tektoncloudevent "github.com/tektoncd/pipeline/pkg/reconciler/events/cloudevent"
 )
 
 type TektonPluginEventType string
@@ -22,20 +29,32 @@ func (c TektonPluginEventType) String() string {
 }
 
 type TektonStepCloudEvent struct {
-	Pod    *corev1.Pod        `json:"pod,omitempty"`
-	Logs   string             `json:"logs,omitempty"`
-	State  *v1beta1.StepState `json:"state,omitempty"`
-	Detail *v1beta1.Step      `json:"detail,omitempty"`
+	PodRef    *corev1.ObjectReference `json:"podRef,omitempty"`
+	Log       string                  `json:"log,omitempty"` // TODO evaluate the security risk.
+	Step      *v1beta1.Step           `json:"step,omitempty"`
+	StepState *v1beta1.StepState      `json:"stepState,omitempty"`
 }
 
-func NewTektonCloudEventStepCloudEvent(run *v1beta1.TaskRun, eventType TektonPluginEventType) TektonStepCloudEvent {
-	return TektonStepCloudEvent{}
+func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginEventType) {
+	logger := logging.FromContext(ctx)
+	configs := config.FromContextOrDefaults(ctx)
+	sendCloudEvents := (configs.Defaults.DefaultCloudEventsSink != "")
+	if !sendCloudEvents {
+		return
+	}
+	ctx = cloudevents.ContextWithTarget(ctx, configs.Defaults.DefaultCloudEventsSink)
+	ctx = cloudevents.ContextWithRetriesExponentialBackoff(ctx, 10*time.Millisecond, 10)
+	cli := tektoncloudevent.Get(ctx)
+
+	event := cloudevents.NewEvent()
+	event.SetType(eventType.String())
+	event.SetSource("TBD")
+	err := event.SetData(cloudevents.ApplicationJSON, d)
+	if err != nil {
+		logger.Errorf("failed to marshal payload :%v", err)
+	}
+
+	if result := cli.Send(ctx, event); !cloudevents.IsACK(result) {
+		logger.Errorf("failed to send CloudEvent: %v", result)
+	}
 }
-
-func EventForStep(run *v1beta1.TaskRun, eventType TektonPluginEventType) (*cloudevents.Event, error) {
-	return nil, nil
-}
-
-func getPod() {}
-
-func getLogs() {}
