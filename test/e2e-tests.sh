@@ -45,6 +45,7 @@ ko apply -f "${PLUGIN_INSTALLATION_CONFIG}"
 wait_until_pods_running tekton-pipelines || fail_test "step-observe-controller does not show up"
 
 # TODO remove this
+kubectl create ns knative-eventing
 kubectl apply --filename ${REPO_ROOT_DIR}/vendor/knative.dev/eventing/config/core/configmaps/tracing.yaml
 
 failed=0
