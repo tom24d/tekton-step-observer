@@ -27,7 +27,7 @@ import (
 )
 
 const (
-	annotationKey = "tekton.plugin.step-observer/result"
+	AnnotationKey = "tekton.plugin.step-observer/result"
 )
 
 type Reconciler struct {
@@ -188,7 +188,7 @@ func (r *Reconciler) ensureEventEmitted(
 
 func initializeAnnotation(run *v1beta1.TaskRun) (*resources.EmissionStatuses, error) {
 	annotation := &resources.EmissionStatuses{}
-	if val, ok := run.Annotations[annotationKey]; ok {
+	if val, ok := run.Annotations[AnnotationKey]; ok {
 		err := resources.UnmarshalString(val, annotation)
 		if err != nil {
 			return nil, fmt.Errorf("failed to unmarshal annotation: %v", err)
@@ -211,7 +211,7 @@ func getPatch(state *resources.EmissionStatuses) ([]byte, error) {
 	}
 	tr := v1beta1.TaskRun{}
 	tr.Annotations = make(map[string]string)
-	tr.Annotations[annotationKey] = data
+	tr.Annotations[AnnotationKey] = data
 	return json.Marshal(tr)
 }
 
