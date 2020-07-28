@@ -28,13 +28,8 @@ source ${REPO_ROOT_DIR}/vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 # This vendors test image code from eventing, in order to use ko to resolve them into Docker images, the
 # path has to be a GOPATH.
 header "Publish test image"
-#TMP_DIR=$(mktemp -d)
-#cp -r ${REPO_ROOT_DIR} ${TMP_DIR}
-#cd TMP_DIR
 sed -i 's@knative.dev/eventing/test/test_images@github.com/tom24d/step-observe-controller/vendor/knative.dev/eventing/test/test_images@g' "${VENDOR_EVENTING_TEST_IMAGES}"*/*.yaml
 $(dirname $0)/upload-test-images.sh ${VENDOR_EVENTING_TEST_IMAGES} e2e || fail_test "Error uploading eventing test images"
-#rm -rf ${TMP_DIR}
-#cd ${REPO_ROOT_DIR}
 
 
 header "Setting up environment"
@@ -56,7 +51,7 @@ failed=0
 
 # Run the integration tests
 header "Running Go e2e tests"
-go_test_e2e -timeout=5m ./test/... || failed=1
+go_test_e2e -timeout=10m ./test/... || failed=1
 
 # Run these _after_ the integration tests b/c they don't quite work all the way
 # and they cause a lot of noise in the logs, making it harder to debug integration
