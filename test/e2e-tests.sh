@@ -14,11 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -o errexit
-set -o nounset
-set -o pipefail
-
 REPO_ROOT_DIR=$(git rev-parse --show-toplevel)
+# Vendored eventing test image.
+readonly VENDOR_EVENTING_TEST_IMAGES="vendor/knative.dev/eventing/test/test_images/"
 readonly PLUGIN_INSTALLATION_CONFIG=${REPO_ROOT_DIR}/config/
 readonly VERSION_TEKTON="0.14.1"
 
@@ -26,6 +24,18 @@ source ${REPO_ROOT_DIR}/vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 
 # Script entry point.
 #initialize $@
+
+# This vendors test image code from eventing, in order to use ko to resolve them into Docker images, the
+# path has to be a GOPATH.
+header "Publish test image"
+#TMP_DIR=$(mktemp -d)
+#cp -r ${REPO_ROOT_DIR} ${TMP_DIR}
+#cd TMP_DIR
+sed -i 's@knative.dev/eventing/test/test_images@github.com/tom24d/step-observe-controller/vendor/knative.dev/eventing/test/test_images@g' "${VENDOR_EVENTING_TEST_IMAGES}"*/*.yaml
+$(dirname $0)/upload-test-images.sh ${VENDOR_EVENTING_TEST_IMAGES} e2e || fail_test "Error uploading eventing test images"
+#rm -rf ${TMP_DIR}
+#cd ${REPO_ROOT_DIR}
+
 
 header "Setting up environment"
 
@@ -39,11 +49,14 @@ echo "Installing step-observe-controller"
 ko apply -f "${PLUGIN_INSTALLATION_CONFIG}"
 wait_until_pods_running tekton-pipelines || fail_test "step-observe-controller does not show up"
 
+# TODO remove this
+kubectl apply --filename ${REPO_ROOT_DIR}/vendor/knative.dev/eventing/config/core/configmaps/tracing.yaml
+
 failed=0
 
 # Run the integration tests
-#header "Running Go e2e tests"
-#go_test_e2e -timeout=20m ./test/... || failed=1
+header "Running Go e2e tests"
+go_test_e2e -timeout=5m ./test/... || failed=1
 
 # Run these _after_ the integration tests b/c they don't quite work all the way
 # and they cause a lot of noise in the logs, making it harder to debug integration

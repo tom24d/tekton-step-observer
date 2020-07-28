@@ -31,6 +31,7 @@ VERSION_KNATIVE="release-0.16"
 # float forward in this repository.
 FLOATING_DEPS=(
   "knative.dev/pkg@${VERSION_KNATIVE}"
+  "knative.dev/eventing@${VERSION_KNATIVE}"
   "github.com/tektoncd/plumbing@${VERSION_TEKTON}"
   "github.com/tektoncd/pipeline@${VERSION_TEKTON}"
 )
