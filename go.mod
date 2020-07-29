@@ -3,7 +3,7 @@ module github.com/tom24d/step-observe-controller
 go 1.14
 
 require (
-	github.com/cloudevents/sdk-go/v2 v2.1.0
+	github.com/cloudevents/sdk-go/v2 v2.2.0
 	github.com/google/go-cmp v0.4.1
 	github.com/hashicorp/go-multierror v1.1.0
 	github.com/tektoncd/pipeline v0.14.1-0.20200717213559-935aecfae56d
