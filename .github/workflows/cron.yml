@@ -2,44 +2,56 @@ name: Update Deps
 
 on:
   schedule:
-    - cron: '0 0 * * 6'
+    - cron: '0 0 * * *'
 
 jobs:
   update-deps:
-    name: Auto Update Dependencies
-    runs-on: ubuntu-latest
+    name: Update Dependencies
+    strategy:
+      matrix:
+        go-version: [1.14.x]
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+
+    env:
+      GOPATH: ${{ github.workspace }}
+      GO111MODULE: off
+
     steps:
-      - name: Install hub cli
-        uses: geertvdc/setup-hub@v1.0.0
-      - name: Set up Go 1.14
+      - name: Set up Go ${{ matrix.go-version }}
         uses: actions/setup-go@v2
         with:
-          go-version: 1.14
+          go-version: ${{ matrix.go-version }}
         id: go
         
-      - name: get go-licenses
-        run: go get github.com/google/go-licenses
-        env:
-          GOPATH: /home/runner/work/
-
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
-
-      - name: Run update sh
+      - name: Install Dependencies
         run: |
-          git config user.email "tom.24d.en@gmail.com"
-          git config user.name "Tomoya Nishide bot"
-          git checkout -b update-deps
-          export PATH=$PATH:/home/runner/work/bin
+          go get github.com/google/go-licenses
+
+      - name: Check out code onto GOPATH
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          path: ./src/github.com/tom24d/step-observe-controller
+
+      - name: Upgrade
+        shell: bash
+        run: |
+          pushd ./src/github.com/tom24d/step-observe-controller
           ./hack/update-deps.sh --upgrade
-          git add .
-          git commit -m "Auto Update Dependencies"
-        env:
-          GOPATH: /home/runner/work/
+          popd
 
       - name: Create Pull Request
-        run: |
-          hub push origin update-deps
-          hub pull-request -b master -a tom24d -l dependencies --file ./.github/template/update-deps.md
-        env:
-          GITHUB_TOKEN: ${{ secrets.UPDATE_BOT_TOKEN }}
+        uses: peter-evans/create-pull-request@v3
+        with:
+          path: ./src/github.com/tom24d/step-observe-controller
+          token: ${{ secrets.UPDATE_BOT_TOKEN }}
+          assignees: tom24d
+          labels: dependencies
+          commit-message: 'ran ./hack/update-deps.sh --upgrade'
+          title: '[scheduled] Auto Update Dependencies'
+          body: |
+            Produced via,
+            ```
+            ./hack/update-deps.sh --upgrade
+            ```
