@@ -22,6 +22,9 @@ REPO_ROOT_DIR=$(git rev-parse --show-toplevel)
 
 source ${REPO_ROOT_DIR}/vendor/github.com/tektoncd/plumbing/scripts/library.sh
 
+export GO111MODULE=on
+export GOFLAGS=-mod=vendor
+
 cd ${REPO_ROOT_DIR}
 
 VERSION_TEKTON="master"
