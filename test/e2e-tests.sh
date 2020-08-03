@@ -18,7 +18,7 @@ REPO_ROOT_DIR=$(git rev-parse --show-toplevel)
 # Vendored eventing test image.
 readonly VENDOR_EVENTING_TEST_IMAGES="vendor/knative.dev/eventing/test/test_images/"
 readonly PLUGIN_INSTALLATION_CONFIG=${REPO_ROOT_DIR}/config/
-readonly VERSION_TEKTON="0.14.1"
+readonly VERSION_TEKTON="0.15.0"
 
 source ${REPO_ROOT_DIR}/vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 
