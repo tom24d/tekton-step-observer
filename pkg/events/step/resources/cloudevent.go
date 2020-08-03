@@ -15,6 +15,10 @@ import (
 	tektoncloudevent "github.com/tektoncd/pipeline/pkg/reconciler/events/cloudevent"
 )
 
+const (
+	CloudEventSource = "/api/v1/namespaces/tekton-pipelines/pods/tekton-step-observer"
+)
+
 type TektonPluginEventType string
 
 const (
@@ -48,7 +52,7 @@ func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginE
 
 	event := cloudevents.NewEvent()
 	event.SetType(eventType.String())
-	event.SetSource("TBD")
+	event.SetSource(CloudEventSource)
 	err := event.SetData(cloudevents.ApplicationJSON, d)
 	if err != nil {
 		logger.Errorf("failed to marshal payload :%v", err)

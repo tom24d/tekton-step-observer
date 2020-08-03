@@ -34,6 +34,7 @@ func Test_EventAssertion(t *testing.T) {
 	assertSetGetFunc := func(event resources.TektonPluginEventType) cetestv2.EventMatcher {
 		return cetestv2.AllOf(
 			cetestv2.HasType(event.String()),
+			cetestv2.HasSource(resources.CloudEventSource),
 		)
 	}
 
