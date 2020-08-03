@@ -2,13 +2,11 @@ package resources
 
 import (
 	"fmt"
-	"knative.dev/pkg/controller"
 	"regexp"
 	"testing"
 	"time"
 
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/client-go/tools/record"
 
 	rtesting "knative.dev/pkg/reconciler/testing"
 
@@ -76,11 +74,7 @@ func TestEmit(t *testing.T) {
 				}
 				ctx = config.ToContext(ctx, cfg)
 
-				_ = controller.GetEventRecorder(ctx).(*record.FakeRecorder)
 				go eventData.Emit(ctx, et)
-				//if err := checkEvents(t, recorder, tc.name, tc.wantEvent); err != nil {
-				//	t.Fatalf(err.Error())
-				//}
 				if tc.wantCloudEvent {
 					if err := checkCloudEvents(t, &fakeClient, t.Name(), `(s?)`+et.String()); err != nil {
 						t.Fatalf(err.Error())
@@ -110,11 +104,6 @@ func eventFromChannel(c chan string, testName string, wantEvent string) error {
 		}
 	}
 	return nil
-}
-
-func checkEvents(t *testing.T, fr *record.FakeRecorder, testName string, wantEvent string) error {
-	t.Helper()
-	return eventFromChannel(fr.Events, testName, wantEvent)
 }
 
 func checkCloudEvents(t *testing.T, fce *tektoncloudevent.FakeClient, testName string, wantEvent string) error {
