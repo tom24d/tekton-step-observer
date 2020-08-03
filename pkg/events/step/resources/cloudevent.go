@@ -53,6 +53,13 @@ func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginE
 	event := cloudevents.NewEvent()
 	event.SetType(eventType.String())
 	event.SetSource(CloudEventSource)
+
+	if eventType == CloudEventTypeStepStarted && !d.StepState.Running.StartedAt.IsZero() {
+		event.SetTime(d.StepState.Running.StartedAt.Time)
+	} else if eventType != CloudEventTypeStepSkipped && !d.StepState.Terminated.FinishedAt.IsZero() {
+		event.SetTime(d.StepState.Terminated.FinishedAt.Time)
+	}
+
 	err := event.SetData(cloudevents.ApplicationJSON, d)
 	if err != nil {
 		logger.Errorf("failed to marshal payload :%v", err)
