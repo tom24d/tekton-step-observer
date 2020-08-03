@@ -58,11 +58,11 @@ func Test_initializeAnnotation(t *testing.T) {
 	wantEmissionStatuses := &resources.EmissionStatuses{
 		Statuses: []resources.EmissionStatus{
 			{
-				Name:    "step-1",
+				Name:    stepName1,
 				Emitted: []resources.TektonPluginEventType{},
 			},
 			{
-				Name:    "step-2",
+				Name:    stepName2,
 				Emitted: []resources.TektonPluginEventType{},
 			},
 		},
