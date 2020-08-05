@@ -49,7 +49,7 @@ func Test_EventAssertion(t *testing.T) {
 		task        func(namespace string) *v1beta1.Task
 		matcherSets []AssertionSet
 	}{
-		"single-task": {
+		"success": {
 			task: func(namespace string) *v1beta1.Task {
 				return &v1beta1.Task{
 					ObjectMeta: metav1.ObjectMeta{Name: "single-task", Namespace: namespace},
@@ -66,7 +66,7 @@ func Test_EventAssertion(t *testing.T) {
 				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 1),
 			},
 		},
-		"double-task": {
+		"success-success": {
 			task: func(namespace string) *v1beta1.Task {
 				return &v1beta1.Task{
 					ObjectMeta: metav1.ObjectMeta{Name: "double-task", Namespace: namespace},
@@ -83,7 +83,7 @@ func Test_EventAssertion(t *testing.T) {
 				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 2),
 			},
 		},
-		"double-task-fail": {
+		"success-fail": {
 			task: func(namespace string) *v1beta1.Task {
 				return &v1beta1.Task{
 					ObjectMeta: metav1.ObjectMeta{Name: "double-task-fail", Namespace: namespace},
@@ -99,6 +99,25 @@ func Test_EventAssertion(t *testing.T) {
 				assertSetGetFunc(step.CloudEventTypeStepStarted, 2),
 				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 1),
 				assertSetGetFunc(step.CloudEventTypeStepFailed, 1),
+			},
+		},
+		"success-fail-skip": {
+			task: func(namespace string) *v1beta1.Task {
+				return &v1beta1.Task{
+					ObjectMeta: metav1.ObjectMeta{Name: "double-task-fail", Namespace: namespace},
+					Spec: v1beta1.TaskSpec{
+						// This was the digest of the latest tag as of 8/12/2019
+						Steps: []v1beta1.Step{
+							successStep, failStep, successStep,
+						},
+					},
+				}
+			},
+			matcherSets: []AssertionSet{
+				assertSetGetFunc(step.CloudEventTypeStepStarted, 2),
+				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 1),
+				assertSetGetFunc(step.CloudEventTypeStepFailed, 1),
+				assertSetGetFunc(step.CloudEventTypeStepSkipped, 1),
 			},
 		},
 	}
