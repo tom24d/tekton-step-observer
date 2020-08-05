@@ -79,10 +79,8 @@ func Test_EventAssertion(t *testing.T) {
 				}
 			},
 			matcherSets: []AssertionSet{
-				assertSetGetFunc(step.CloudEventTypeStepStarted, 1),
-				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 1),
-				assertSetGetFunc(step.CloudEventTypeStepStarted, 1),
-				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 1),
+				assertSetGetFunc(step.CloudEventTypeStepStarted, 2),
+				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 2),
 			},
 		},
 		"double-task-fail": {
@@ -98,9 +96,8 @@ func Test_EventAssertion(t *testing.T) {
 				}
 			},
 			matcherSets: []AssertionSet{
-				assertSetGetFunc(step.CloudEventTypeStepStarted, 1),
+				assertSetGetFunc(step.CloudEventTypeStepStarted, 2),
 				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 1),
-				assertSetGetFunc(step.CloudEventTypeStepStarted, 1),
 				assertSetGetFunc(step.CloudEventTypeStepFailed, 1),
 			},
 		},
