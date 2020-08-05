@@ -191,8 +191,11 @@ func initializeAnnotation(run *v1beta1.TaskRun) (*stepresource.EmissionStatuses,
 		return annotation, nil
 	}
 
-	for _, step := range stepresource.GetSteps(run) {
-		r := stepresource.EmissionStatus{Name: step.Name, Emitted: make([]stepresource.TektonPluginEventType, 0, 2)}
+	for _, step := range stepresource.GetStepStatuses(run) {
+		r := stepresource.EmissionStatus{
+			Name:    step.Name,
+			Emitted: make([]stepresource.TektonPluginEventType, 0, 2),
+		}
 		annotation.Statuses = append(annotation.Statuses, r)
 	}
 
