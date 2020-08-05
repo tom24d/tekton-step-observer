@@ -43,6 +43,7 @@ header "Install Eventing"
 kubectl apply --filename https://github.com/knative/eventing/releases/download/v${VERSION_EVENTING}/eventing-crds.yaml
 kubectl apply --filename https://github.com/knative/eventing/releases/download/v${VERSION_EVENTING}/eventing-core.yaml
 kubectl apply --filename https://github.com/knative/eventing/releases/download/v${VERSION_EVENTING}/mt-channel-broker.yaml
+kubectl apply --filename https://github.com/knative/eventing/releases/download/v${VERSION_EVENTING}/in-memory-channel.yaml
 wait_until_pods_running knative-eventing || fail_test "Knative Eventing not up"
 
 
@@ -51,15 +52,11 @@ echo "Installing step-observe-controller"
 ko apply -f "${PLUGIN_INSTALLATION_CONFIG}"
 wait_until_pods_running tekton-pipelines || fail_test "step-observe-controller does not show up"
 
-# TODO remove this
-kubectl create ns knative-eventing
-kubectl apply --filename ${REPO_ROOT_DIR}/vendor/knative.dev/eventing/config/core/configmaps/tracing.yaml
-
 failed=0
 
 # Run the integration tests
 header "Running Go e2e tests"
-go_test_e2e -timeout=10m ./test/... -channels=messaging.knative.dev/v1beta1:Channel,messaging.knative.dev/v1beta1:InMemoryChannel,messaging.knative.dev/v1:Channel,messaging.knative.dev/v1:InMemoryChannel || failed=1
+go_test_e2e -timeout=10m ./test/... -channels=messaging.knative.dev/v1:InMemoryChannel || failed=1
 
 # Run these _after_ the integration tests b/c they don't quite work all the way
 # and they cause a lot of noise in the logs, making it harder to debug integration

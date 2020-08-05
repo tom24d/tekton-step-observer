@@ -60,7 +60,7 @@ func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, ass
 	}
 
 	// set default-sink
-	PatchDefaultCloudEventSinkOrFail(t, client.Kube, "http://"+brokerAddr, client.Namespace)
+	PatchDefaultCloudEventSinkOrFail(t, client.Kube, brokerAddr, client.Namespace)
 
 	t.Logf("Creating Task and TaskRun in namespace %s", client.Namespace)
 
@@ -99,13 +99,17 @@ func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, ass
 	}
 
 	// multi-assert event
-	for i, s := range assertionSet {
-		tm, err := step.GetEventTime(&run.Status.Steps[i/2], s.eventType)
+	index := 0
+	for _, s := range assertionSet {
+		tm, err := step.GetEventTime(&run.Status.Steps[index], s.eventType)
 		if err == nil {
-			s.Matchers = append(s.Matchers, cetestv2.HasTime(*tm))
+			s.Matchers = append(s.Matchers, cetestv2.HasTime(tm.UTC()))
 		} else {
 			t.Logf("%v", err)
 		}
 		eventTracker.AssertExact(s.N, recordevents.MatchEvent(cetestv2.AllOf(s.Matchers...)))
+		if s.eventType != step.CloudEventTypeStepStarted {
+			index += 1
+		}
 	}
 }

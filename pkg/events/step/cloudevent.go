@@ -58,7 +58,7 @@ func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginE
 	if tm, err := GetEventTime(d.StepState, eventType); err != nil {
 		logger.Errorf("failed to get time: %v", err)
 	} else {
-		event.SetTime(*tm)
+		event.SetTime(tm.UTC())
 	}
 
 	err := event.SetData(cloudevents.ApplicationJSON, d)
@@ -69,6 +69,6 @@ func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginE
 	if result := cli.Send(ctx, event); !cloudevents.IsACK(result) {
 		logger.Errorf("failed to send CloudEvent: %v", result)
 	} else {
-		logger.Infof("Step:%s for %v has been sent successfully.", d.StepState.Name, eventType)
+		logger.Infof("%v for step:%s  has been sent successfully.", eventType, d.StepState.Name)
 	}
 }

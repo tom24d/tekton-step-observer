@@ -108,9 +108,9 @@ func Test_EventAssertion(t *testing.T) {
 
 	for name, test := range testCases {
 		t.Run(name, func(t *testing.T) {
-			channelTestRunner.RunTests(t, eventingtestlib.FeatureBasic, func(st *testing.T, component metav1.TypeMeta) {
+			RunTests(&channelTestRunner, t, eventingtestlib.FeatureBasic, func(st *testing.T, component metav1.TypeMeta) {
 				brokerCreator := eventinghelpers.ChannelBasedBrokerCreator(component, brokerClass)
-				EventAssertion(t, test.task, test.matcherSets, brokerCreator)
+				EventAssertion(st, test.task, test.matcherSets, brokerCreator)
 			})
 		})
 	}

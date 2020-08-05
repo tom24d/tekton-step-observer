@@ -26,4 +26,5 @@ func PatchDefaultCloudEventSinkOrFail(t *testing.T, c *pkgTest.KubeClient, sink 
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Logf("\"default-cloud-events-sink\" is set to: %s", sink)
 }
