@@ -67,5 +67,7 @@ func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginE
 
 	if result := cli.Send(ctx, event); !cloudevents.IsACK(result) {
 		logger.Errorf("failed to send CloudEvent: %v", result)
+	} else {
+		logger.Info("Step:%s for %v has been sent successfully.", d.Step.Name, eventType)
 	}
 }

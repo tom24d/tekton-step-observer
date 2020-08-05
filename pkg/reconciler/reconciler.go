@@ -77,7 +77,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, key string) error {
 func (r *Reconciler) reconcile(ctx context.Context, taskrun *v1beta1.TaskRun) error {
 	logger := logging.FromContext(ctx)
 	if taskrun.Status.TaskSpec == nil || len(stepresource.GetSteps(taskrun)) < 1 {
-		logger.Infof("step events emission skipped as no step in taskrun: %s", taskrun.Name)
+		logger.Infof("step events emission skipped as no step in the taskrun: %s", taskrun.Name)
 		return nil
 	}
 
@@ -96,7 +96,6 @@ func (r *Reconciler) reconcile(ctx context.Context, taskrun *v1beta1.TaskRun) er
 	if err != nil {
 		return err
 	}
-	logger.Infof("PATCH: %s", patch)
 	_, err = r.pipelineClient.TektonV1beta1().TaskRuns(taskrun.Namespace).Patch(taskrun.Name, types.MergePatchType, patch)
 	if err != nil {
 		logger.Errorf("failed to PATCH taskrun: %v", err)
@@ -149,8 +148,6 @@ func (r *Reconciler) ensureEventEmitted(
 	ctx context.Context, annotation *resources.EmissionStatuses, eventType resources.TektonPluginEventType,
 	run *v1beta1.TaskRun, index int,
 ) error {
-	logger := logging.FromContext(ctx)
-
 	name := stepresource.GetSteps(run)[index].Name
 	emissionStatus, err := annotation.GetStatus(name)
 	if err != nil {
@@ -178,7 +175,6 @@ func (r *Reconciler) ensureEventEmitted(
 		}
 		go data.Emit(ctx, eventType)
 		err = emissionStatus.MarkEvent(eventType)
-		logger.Infof("EVENT EMISSION step: %s, type: %v, annotation: %v", name, eventType, annotation)
 		if err != nil {
 			return err
 		}
