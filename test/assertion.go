@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"github.com/tom24d/step-observe-controller/pkg/events/step"
 	"testing"
 	"time"
 
@@ -15,14 +16,12 @@ import (
 
 	cetestv2 "github.com/cloudevents/sdk-go/v2/test"
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
-
-	"github.com/tom24d/step-observe-controller/pkg/events/step/resources"
 )
 
 type AssertionSet struct {
-	N        int
-	Matchers []cetestv2.EventMatcher
-	eventType resources.TektonPluginEventType
+	N         int
+	Matchers  []cetestv2.EventMatcher
+	eventType step.TektonPluginEventType
 }
 
 func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, assertionSet []AssertionSet) {
@@ -82,12 +81,12 @@ func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, ass
 
 	// multi-assert event
 	for i, s := range assertionSet {
-		if e := s.eventType; e == resources.CloudEventTypeStepStarted {
+		if e := s.eventType; e == step.CloudEventTypeStepStarted {
 			tm, err := getTimeIfExists(runned, i/2, false)
 			if err == nil {
 				s.Matchers = append(s.Matchers, cetestv2.HasTime(*tm))
 			}
-		} else if e != resources.CloudEventTypeStepSkipped {
+		} else if e != step.CloudEventTypeStepSkipped {
 			tm, err := getTimeIfExists(runned, i/2, true)
 			if err == nil {
 				s.Matchers = append(s.Matchers, cetestv2.HasTime(*tm))

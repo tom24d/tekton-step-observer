@@ -1,4 +1,4 @@
-package resources
+package step
 
 import (
 	"context"
@@ -12,6 +12,7 @@ import (
 
 	"github.com/tektoncd/pipeline/pkg/apis/config"
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
+
 	tektoncloudevent "github.com/tektoncd/pipeline/pkg/reconciler/events/cloudevent"
 )
 
@@ -54,10 +55,10 @@ func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginE
 	event.SetType(eventType.String())
 	event.SetSource(CloudEventSource)
 
-	if eventType == CloudEventTypeStepStarted && !d.StepState.Running.StartedAt.IsZero() {
-		event.SetTime(d.StepState.Running.StartedAt.Time)
-	} else if eventType != CloudEventTypeStepSkipped && !d.StepState.Terminated.FinishedAt.IsZero() {
-		event.SetTime(d.StepState.Terminated.FinishedAt.Time)
+	if tm, err := GetTime(d.StepState, eventType); err != nil {
+		logger.Errorf("failed to get time: %v", err)
+	} else {
+		event.SetTime(*tm)
 	}
 
 	err := event.SetData(cloudevents.ApplicationJSON, d)

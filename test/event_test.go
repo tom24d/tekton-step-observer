@@ -3,6 +3,7 @@
 package test
 
 import (
+	"github.com/tom24d/step-observe-controller/pkg/events/step"
 	"testing"
 
 	corev1 "k8s.io/api/core/v1"
@@ -11,8 +12,6 @@ import (
 	cetestv2 "github.com/cloudevents/sdk-go/v2/test"
 
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
-
-	"github.com/tom24d/step-observe-controller/pkg/events/step/resources"
 )
 
 func Test_EventAssertion(t *testing.T) {
@@ -31,12 +30,12 @@ func Test_EventAssertion(t *testing.T) {
 	},
 	}
 
-	assertSetGetFunc := func(event resources.TektonPluginEventType, n int) AssertionSet {
+	assertSetGetFunc := func(event step.TektonPluginEventType, n int) AssertionSet {
 		return AssertionSet{
 			N: n,
 			Matchers: []cetestv2.EventMatcher{
 				cetestv2.HasType(event.String()),
-				cetestv2.HasSource(resources.CloudEventSource),
+				cetestv2.HasSource(step.CloudEventSource),
 			},
 			eventType: event,
 		}
@@ -59,8 +58,8 @@ func Test_EventAssertion(t *testing.T) {
 				}
 			},
 			matcherSets: []AssertionSet{
-				assertSetGetFunc(resources.CloudEventTypeStepStarted, 1),
-				assertSetGetFunc(resources.CloudEventTypeStepSucceeded, 1),
+				assertSetGetFunc(step.CloudEventTypeStepStarted, 1),
+				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 1),
 			},
 		},
 		"double-task": {
@@ -76,10 +75,10 @@ func Test_EventAssertion(t *testing.T) {
 				}
 			},
 			matcherSets: []AssertionSet{
-				assertSetGetFunc(resources.CloudEventTypeStepStarted, 1),
-				assertSetGetFunc(resources.CloudEventTypeStepSucceeded, 1),
-				assertSetGetFunc(resources.CloudEventTypeStepStarted, 1),
-				assertSetGetFunc(resources.CloudEventTypeStepSucceeded, 1),
+				assertSetGetFunc(step.CloudEventTypeStepStarted, 1),
+				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 1),
+				assertSetGetFunc(step.CloudEventTypeStepStarted, 1),
+				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 1),
 			},
 		},
 		"double-task-fail": {
@@ -95,10 +94,10 @@ func Test_EventAssertion(t *testing.T) {
 				}
 			},
 			matcherSets: []AssertionSet{
-				assertSetGetFunc(resources.CloudEventTypeStepStarted, 1),
-				assertSetGetFunc(resources.CloudEventTypeStepSucceeded, 1),
-				assertSetGetFunc(resources.CloudEventTypeStepStarted, 1),
-				assertSetGetFunc(resources.CloudEventTypeStepFailed, 1),
+				assertSetGetFunc(step.CloudEventTypeStepStarted, 1),
+				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 1),
+				assertSetGetFunc(step.CloudEventTypeStepStarted, 1),
+				assertSetGetFunc(step.CloudEventTypeStepFailed, 1),
 			},
 		},
 	}

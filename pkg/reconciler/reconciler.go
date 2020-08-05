@@ -23,7 +23,6 @@ import (
 
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
 	stepresource "github.com/tom24d/step-observe-controller/pkg/events/step"
-	"github.com/tom24d/step-observe-controller/pkg/events/step/resources"
 )
 
 const (
@@ -103,19 +102,19 @@ func (r *Reconciler) reconcile(ctx context.Context, taskrun *v1beta1.TaskRun) er
 	return nil
 }
 
-func (r *Reconciler) reconcileSteps(ctx context.Context, sent *resources.EmissionStatuses, taskrun *v1beta1.TaskRun) error {
+func (r *Reconciler) reconcileSteps(ctx context.Context, sent *stepresource.EmissionStatuses, taskrun *v1beta1.TaskRun) error {
 	var errs *multierr.Error
 	for i, step := range stepresource.GetStepStatuses(taskrun) {
 		// start
 		if step.ContainerState.Running != nil {
 			// (Running) emit&mark started if i=0
 			if i == 0 && !taskrun.Status.StartTime.IsZero() {
-				errs = multierr.Append(r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepStarted, taskrun, i))
+				errs = multierr.Append(r.ensureEventEmitted(ctx, sent, stepresource.CloudEventTypeStepStarted, taskrun, i))
 			}
 		}
 		// emit&mark started if i!=0 && i-1 step marked as succeeded
-		if i != 0 && sent.IsMarked(stepresource.GetStepStatuses(taskrun)[i-1].Name, resources.CloudEventTypeStepSucceeded) {
-			errs = multierr.Append(r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepStarted, taskrun, i))
+		if i != 0 && sent.IsMarked(stepresource.GetStepStatuses(taskrun)[i-1].Name, stepresource.CloudEventTypeStepSucceeded) {
+			errs = multierr.Append(r.ensureEventEmitted(ctx, sent, stepresource.CloudEventTypeStepStarted, taskrun, i))
 		}
 
 		if step.ContainerState.Terminated != nil {
@@ -123,20 +122,20 @@ func (r *Reconciler) reconcileSteps(ctx context.Context, sent *resources.Emissio
 			// (Terminated) emit&mark skipped if i!=0 && i-1 step marked as failed||skipped,
 			// then continue to avoid being considered as failure
 			if i != 0 &&
-				(sent.IsMarked(stepresource.GetStepStatuses(taskrun)[i-1].Name, resources.CloudEventTypeStepFailed) ||
-					sent.IsMarked(stepresource.GetStepStatuses(taskrun)[i-1].Name, resources.CloudEventTypeStepSkipped)) {
+				(sent.IsMarked(stepresource.GetStepStatuses(taskrun)[i-1].Name, stepresource.CloudEventTypeStepFailed) ||
+					sent.IsMarked(stepresource.GetStepStatuses(taskrun)[i-1].Name, stepresource.CloudEventTypeStepSkipped)) {
 
-				errs = multierr.Append(r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepSkipped, taskrun, i))
+				errs = multierr.Append(r.ensureEventEmitted(ctx, sent, stepresource.CloudEventTypeStepSkipped, taskrun, i))
 				continue
 			}
 			// succeeded
 			// (Terminated) emit&mark succeeded if exit code is 0
 			if step.Terminated.ExitCode == 0 {
-				errs = multierr.Append(r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepSucceeded, taskrun, i))
+				errs = multierr.Append(r.ensureEventEmitted(ctx, sent, stepresource.CloudEventTypeStepSucceeded, taskrun, i))
 			} else {
 				// failure
 				// (Terminated) emit&mark failed if exit code is not 0
-				errs = multierr.Append(r.ensureEventEmitted(ctx, sent, resources.CloudEventTypeStepFailed, taskrun, i))
+				errs = multierr.Append(r.ensureEventEmitted(ctx, sent, stepresource.CloudEventTypeStepFailed, taskrun, i))
 			}
 		}
 	}
@@ -145,7 +144,7 @@ func (r *Reconciler) reconcileSteps(ctx context.Context, sent *resources.Emissio
 }
 
 func (r *Reconciler) ensureEventEmitted(
-	ctx context.Context, annotation *resources.EmissionStatuses, eventType resources.TektonPluginEventType,
+	ctx context.Context, annotation *stepresource.EmissionStatuses, eventType stepresource.TektonPluginEventType,
 	run *v1beta1.TaskRun, index int,
 ) error {
 	name := stepresource.GetSteps(run)[index].Name
@@ -162,7 +161,7 @@ func (r *Reconciler) ensureEventEmitted(
 		if err != nil {
 			return err
 		}
-		data := resources.TektonStepCloudEvent{
+		data := stepresource.TektonStepCloudEvent{
 			Step:      &s1[index],
 			StepState: &s2[index],
 			PodRef: &corev1.ObjectReference{
@@ -182,10 +181,10 @@ func (r *Reconciler) ensureEventEmitted(
 	return nil
 }
 
-func initializeAnnotation(run *v1beta1.TaskRun) (*resources.EmissionStatuses, error) {
-	annotation := &resources.EmissionStatuses{}
+func initializeAnnotation(run *v1beta1.TaskRun) (*stepresource.EmissionStatuses, error) {
+	annotation := &stepresource.EmissionStatuses{}
 	if val, ok := run.Annotations[AnnotationKey]; ok {
-		err := resources.UnmarshalString(val, annotation)
+		err := stepresource.UnmarshalString(val, annotation)
 		if err != nil {
 			return nil, fmt.Errorf("failed to unmarshal annotation: %v", err)
 		}
@@ -193,14 +192,14 @@ func initializeAnnotation(run *v1beta1.TaskRun) (*resources.EmissionStatuses, er
 	}
 
 	for _, step := range stepresource.GetSteps(run) {
-		r := resources.EmissionStatus{Name: step.Name, Emitted: make([]resources.TektonPluginEventType, 0, 2)}
+		r := stepresource.EmissionStatus{Name: step.Name, Emitted: make([]stepresource.TektonPluginEventType, 0, 2)}
 		annotation.Statuses = append(annotation.Statuses, r)
 	}
 
 	return annotation, nil
 }
 
-func getPatch(state *resources.EmissionStatuses) ([]byte, error) {
+func getPatch(state *stepresource.EmissionStatuses) ([]byte, error) {
 	data, err := state.MarshalString()
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal EmissionStatuses object: %v", err)

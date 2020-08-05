@@ -1,4 +1,4 @@
-package resources
+package step
 
 import (
 	"encoding/json"
