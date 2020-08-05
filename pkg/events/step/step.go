@@ -17,7 +17,7 @@ func GetStepStatuses(taskrun *v1beta1.TaskRun) []v1beta1.StepState {
 
 func GetTime(state *v1beta1.StepState, eventType TektonPluginEventType) (*time.Time, error) {
 	if eventType == CloudEventTypeStepStarted {
-		if state.Running != nil && !state.Running.StartedAt.Time.IsZero(){
+		if state.Running != nil && !state.Running.StartedAt.Time.IsZero() {
 			return &state.Running.StartedAt.Time, nil
 		}
 		return nil, fmt.Errorf("no initialized running containerstate")
