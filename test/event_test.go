@@ -3,7 +3,6 @@
 package test
 
 import (
-	"github.com/tom24d/step-observe-controller/pkg/events/step"
 	"testing"
 
 	corev1 "k8s.io/api/core/v1"
@@ -11,7 +10,12 @@ import (
 
 	cetestv2 "github.com/cloudevents/sdk-go/v2/test"
 
+	eventinghelpers "knative.dev/eventing/test/e2e/helpers"
+	eventingtestlib "knative.dev/eventing/test/lib"
+
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
+
+	"github.com/tom24d/step-observe-controller/pkg/events/step"
 )
 
 func Test_EventAssertion(t *testing.T) {
@@ -104,7 +108,10 @@ func Test_EventAssertion(t *testing.T) {
 
 	for name, test := range testCases {
 		t.Run(name, func(t *testing.T) {
-			EventAssertion(t, test.task, test.matcherSets)
+			channelTestRunner.RunTests(t, eventingtestlib.FeatureBasic, func(st *testing.T, component metav1.TypeMeta) {
+				brokerCreator := eventinghelpers.ChannelBasedBrokerCreator(component, brokerClass)
+				EventAssertion(t, test.task, test.matcherSets, brokerCreator)
+			})
 		})
 	}
 }

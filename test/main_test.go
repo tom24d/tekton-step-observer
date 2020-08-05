@@ -1,8 +1,8 @@
 package test
 
 import (
-	"testing"
 	"os"
+	"testing"
 
 	"knative.dev/eventing/test"
 	testlib "knative.dev/eventing/test/lib"

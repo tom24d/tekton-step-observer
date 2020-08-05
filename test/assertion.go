@@ -6,6 +6,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+	eventinghelpers "knative.dev/eventing/test/e2e/helpers"
 	eventingtestlib "knative.dev/eventing/test/lib"
 	"knative.dev/eventing/test/lib/recordevents"
 	eventingresources "knative.dev/eventing/test/lib/resources"
@@ -25,15 +26,14 @@ type AssertionSet struct {
 	eventType step.TektonPluginEventType
 }
 
-func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, assertionSet []AssertionSet) {
+func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, assertionSet []AssertionSet, brokerCreater eventinghelpers.BrokerCreator) {
 
 	t.Helper()
 
 	const (
 		recordEventPodName = "e2e-step-observer-logger-event-tracker"
 		taskRunName        = "e2e-test-step-observed-run"
-		brokerName         = "e2e-event-broker"
-		triggerName = "e2e-event-trigger"
+		triggerName        = "e2e-event-trigger"
 	)
 
 	client := eventingtestlib.Setup(t, false)
@@ -45,16 +45,16 @@ func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, ass
 	eventTracker, ePod := recordevents.StartEventRecordOrFail(client, recordEventPodName)
 	defer eventTracker.Cleanup()
 
-	broker := client.CreateBrokerV1OrFail(brokerName)
-	client.WaitForResourceReadyOrFail(broker.Name, eventingtestlib.BrokerTypeMeta)
+	brokerName := brokerCreater(client)
+	client.WaitForResourceReadyOrFail(brokerName, eventingtestlib.BrokerTypeMeta)
 	_ = client.CreateTriggerV1OrFail(triggerName,
 		eventingresources.WithSubscriberServiceRefForTriggerV1(ePod.Name),
 		eventingresources.WithAttributesTriggerFilterV1(step.CloudEventSource, "", nil),
-		eventingresources.WithBrokerV1(broker.Name),
+		eventingresources.WithBrokerV1(brokerName),
 	)
 	client.WaitForAllTestResourcesReadyOrFail()
 
-	brokerAddr, err := client.GetAddressableURI(broker.Name, eventingtestlib.BrokerTypeMeta)
+	brokerAddr, err := client.GetAddressableURI(brokerName, eventingtestlib.BrokerTypeMeta)
 	if err != nil {
 		t.Fatalf("failed to get broker URI: %v", err)
 	}
