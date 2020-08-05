@@ -1,32 +1,39 @@
 package test
 
 import (
-	"knative.dev/pkg/apis"
 	"testing"
 
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+	eventinghelpers "knative.dev/eventing/test/e2e/helpers"
 	eventingtestlib "knative.dev/eventing/test/lib"
 	"knative.dev/eventing/test/lib/recordevents"
+	eventingresources "knative.dev/eventing/test/lib/resources"
 
+	"knative.dev/pkg/apis"
 	knativetest "knative.dev/pkg/test"
 
 	cetestv2 "github.com/cloudevents/sdk-go/v2/test"
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
+
+	"github.com/tom24d/step-observe-controller/pkg/events/step"
 )
 
 type AssertionSet struct {
-	N          int
-	MatcherGen cetestv2.EventMatcher
+	N         int
+	Matchers  []cetestv2.EventMatcher
+	eventType step.TektonPluginEventType
 }
 
-func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, assertionSet []AssertionSet) {
+func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, assertionSet []AssertionSet, brokerCreater eventinghelpers.BrokerCreator) {
 
 	t.Helper()
 
 	const (
 		recordEventPodName = "e2e-step-observer-logger-event-tracker"
 		taskRunName        = "e2e-test-step-observed-run"
+		triggerName        = "e2e-event-trigger"
 	)
 
 	client := eventingtestlib.Setup(t, false)
@@ -38,8 +45,22 @@ func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, ass
 	eventTracker, ePod := recordevents.StartEventRecordOrFail(client, recordEventPodName)
 	defer eventTracker.Cleanup()
 
+	brokerName := brokerCreater(client)
+	client.WaitForResourceReadyOrFail(brokerName, eventingtestlib.BrokerTypeMeta)
+	_ = client.CreateTriggerV1OrFail(triggerName,
+		eventingresources.WithSubscriberServiceRefForTriggerV1(ePod.Name),
+		eventingresources.WithAttributesTriggerFilterV1(step.CloudEventSource, "", nil),
+		eventingresources.WithBrokerV1(brokerName),
+	)
+	client.WaitForAllTestResourcesReadyOrFail()
+
+	brokerAddr, err := client.GetAddressableURI(brokerName, eventingtestlib.BrokerTypeMeta)
+	if err != nil {
+		t.Fatalf("failed to get broker URI: %v", err)
+	}
+
 	// set default-sink
-	PatchDefaultCloudEventSinkOrFail(t, client.Kube, "http://"+client.GetServiceHost(ePod.Name), client.Namespace)
+	PatchDefaultCloudEventSinkOrFail(t, client.Kube, brokerAddr, client.Namespace)
 
 	t.Logf("Creating Task and TaskRun in namespace %s", client.Namespace)
 
@@ -61,7 +82,9 @@ func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, ass
 	if err := WaitForTaskRunState(pipelineClient, taskRunName, func(ca apis.ConditionAccessor) (bool, error) {
 		c := ca.GetCondition(apis.ConditionSucceeded)
 		if c != nil {
-			return true, nil
+			if c.Status == corev1.ConditionTrue || c.Status == corev1.ConditionFalse {
+				return true, nil
+			}
 		}
 		return false, nil
 	}); err != nil {
@@ -69,8 +92,25 @@ func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, ass
 	}
 	t.Log("Asserting CloudEvent...")
 
+	//get TaskRun to assert CloudEvent Time
+	//run, err := pipelineClient.TaskRunClient.Get(taskRunName, metav1.GetOptions{})
+	//if err != nil {
+	//	t.Errorf("failed to get taskrun: %v", err)
+	//}
+
 	// multi-assert event
+	//index := 0
 	for _, s := range assertionSet {
-		eventTracker.AssertExact(s.N, recordevents.MatchEvent(s.MatcherGen))
+		// https://github.com/tom24d/step-observe-controller/issues/21
+		//tm, err := step.GetEventTime(&run.Status.Steps[index], s.eventType)
+		//if err == nil {
+		//	s.Matchers = append(s.Matchers, cetestv2.HasTime(tm.UTC()))
+		//} else {
+		//	t.Logf("%v", err)
+		//}
+		eventTracker.AssertExact(s.N, recordevents.MatchEvent(cetestv2.AllOf(s.Matchers...)))
+		//if s.eventType != step.CloudEventTypeStepStarted {
+		//	index += 1
+		//}
 	}
 }

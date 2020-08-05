@@ -19,6 +19,7 @@ REPO_ROOT_DIR=$(git rev-parse --show-toplevel)
 readonly VENDOR_EVENTING_TEST_IMAGES="vendor/knative.dev/eventing/test/test_images/"
 readonly PLUGIN_INSTALLATION_CONFIG=${REPO_ROOT_DIR}/config/
 readonly VERSION_TEKTON="0.15.0"
+readonly VERSION_EVENTING="0.16.1"
 
 source ${REPO_ROOT_DIR}/vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 
@@ -38,21 +39,24 @@ echo "Installing tekton pipeline"
 kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v${VERSION_TEKTON}/release.yaml
 wait_until_pods_running tekton-pipelines || fail_test "tekton pipeline does not show up"
 
+header "Install Eventing"
+kubectl apply --filename https://github.com/knative/eventing/releases/download/v${VERSION_EVENTING}/eventing-crds.yaml
+kubectl apply --filename https://github.com/knative/eventing/releases/download/v${VERSION_EVENTING}/eventing-core.yaml
+kubectl apply --filename https://github.com/knative/eventing/releases/download/v${VERSION_EVENTING}/mt-channel-broker.yaml
+kubectl apply --filename https://github.com/knative/eventing/releases/download/v${VERSION_EVENTING}/in-memory-channel.yaml
+wait_until_pods_running knative-eventing || fail_test "Knative Eventing not up"
+
 
 # set up plugin
 echo "Installing step-observe-controller"
 ko apply -f "${PLUGIN_INSTALLATION_CONFIG}"
 wait_until_pods_running tekton-pipelines || fail_test "step-observe-controller does not show up"
 
-# TODO remove this
-kubectl create ns knative-eventing
-kubectl apply --filename ${REPO_ROOT_DIR}/vendor/knative.dev/eventing/config/core/configmaps/tracing.yaml
-
 failed=0
 
 # Run the integration tests
 header "Running Go e2e tests"
-go_test_e2e -timeout=10m ./test/... || failed=1
+go_test_e2e -timeout=10m ./test/... -channels=messaging.knative.dev/v1:InMemoryChannel || failed=1
 
 # Run these _after_ the integration tests b/c they don't quite work all the way
 # and they cause a lot of noise in the logs, making it harder to debug integration

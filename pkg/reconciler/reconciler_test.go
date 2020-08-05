@@ -1,6 +1,7 @@
 package reconciler
 
 import (
+	"github.com/tom24d/step-observe-controller/pkg/events/step"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -8,8 +9,6 @@ import (
 
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
 	"github.com/tektoncd/pipeline/test/diff"
-
-	"github.com/tom24d/step-observe-controller/pkg/events/step/resources"
 )
 
 func Test_initializeAnnotation(t *testing.T) {
@@ -55,15 +54,15 @@ func Test_initializeAnnotation(t *testing.T) {
 	tr := v1beta1.TaskRun{
 		Status: trstatus,
 	}
-	wantEmissionStatuses := &resources.EmissionStatuses{
-		Statuses: []resources.EmissionStatus{
+	wantEmissionStatuses := &step.EmissionStatuses{
+		Statuses: []step.EmissionStatus{
 			{
-				Name:    "step-1",
-				Emitted: []resources.TektonPluginEventType{},
+				Name:    stepName1,
+				Emitted: []step.TektonPluginEventType{},
 			},
 			{
-				Name:    "step-2",
-				Emitted: []resources.TektonPluginEventType{},
+				Name:    stepName2,
+				Emitted: []step.TektonPluginEventType{},
 			},
 		},
 	}

@@ -10,9 +10,12 @@ import (
 
 	cetestv2 "github.com/cloudevents/sdk-go/v2/test"
 
+	eventinghelpers "knative.dev/eventing/test/e2e/helpers"
+	eventingtestlib "knative.dev/eventing/test/lib"
+
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
 
-	"github.com/tom24d/step-observe-controller/pkg/events/step/resources"
+	"github.com/tom24d/step-observe-controller/pkg/events/step"
 )
 
 func Test_EventAssertion(t *testing.T) {
@@ -31,10 +34,15 @@ func Test_EventAssertion(t *testing.T) {
 	},
 	}
 
-	assertSetGetFunc := func(event resources.TektonPluginEventType) cetestv2.EventMatcher {
-		return cetestv2.AllOf(
-			cetestv2.HasType(event.String()),
-		)
+	assertSetGetFunc := func(event step.TektonPluginEventType, n int) AssertionSet {
+		return AssertionSet{
+			N: n,
+			Matchers: []cetestv2.EventMatcher{
+				cetestv2.HasType(event.String()),
+				cetestv2.HasSource(step.CloudEventSource),
+			},
+			eventType: event,
+		}
 	}
 
 	testCases := map[string]struct {
@@ -54,8 +62,8 @@ func Test_EventAssertion(t *testing.T) {
 				}
 			},
 			matcherSets: []AssertionSet{
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepStarted)},
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepSucceeded)},
+				assertSetGetFunc(step.CloudEventTypeStepStarted, 1),
+				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 1),
 			},
 		},
 		"double-task": {
@@ -71,10 +79,8 @@ func Test_EventAssertion(t *testing.T) {
 				}
 			},
 			matcherSets: []AssertionSet{
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepStarted)},
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepSucceeded)},
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepStarted)},
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepSucceeded)},
+				assertSetGetFunc(step.CloudEventTypeStepStarted, 2),
+				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 2),
 			},
 		},
 		"double-task-fail": {
@@ -90,17 +96,19 @@ func Test_EventAssertion(t *testing.T) {
 				}
 			},
 			matcherSets: []AssertionSet{
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepStarted)},
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepSucceeded)},
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepStarted)},
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepFailed)},
+				assertSetGetFunc(step.CloudEventTypeStepStarted, 2),
+				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 1),
+				assertSetGetFunc(step.CloudEventTypeStepFailed, 1),
 			},
 		},
 	}
 
 	for name, test := range testCases {
 		t.Run(name, func(t *testing.T) {
-			EventAssertion(t, test.task, test.matcherSets)
+			RunTests(&channelTestRunner, t, eventingtestlib.FeatureBasic, func(st *testing.T, component metav1.TypeMeta) {
+				brokerCreator := eventinghelpers.ChannelBasedBrokerCreator(component, brokerClass)
+				EventAssertion(st, test.task, test.matcherSets, brokerCreator)
+			})
 		})
 	}
 }
