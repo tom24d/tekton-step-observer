@@ -3,6 +3,7 @@ package test
 import (
 	"testing"
 
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	eventingtestlib "knative.dev/eventing/test/lib"
@@ -64,7 +65,9 @@ func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, ass
 	if err := WaitForTaskRunState(pipelineClient, taskRunName, func(ca apis.ConditionAccessor) (bool, error) {
 		c := ca.GetCondition(apis.ConditionSucceeded)
 		if c != nil {
-			return true, nil
+			if c.Status == corev1.ConditionTrue || c.Status == corev1.ConditionFalse {
+				return true, nil
+			}
 		}
 		return false, nil
 	}); err != nil {
