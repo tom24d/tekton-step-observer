@@ -58,7 +58,7 @@ func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginE
 	if tm, err := GetEventTime(d.StepState, eventType); err != nil {
 		logger.Errorf("failed to get time: %v", err)
 	} else {
-		event.SetTime(tm.UTC())
+		event.SetTime(*tm)
 	}
 
 	err := event.SetData(cloudevents.ApplicationJSON, d)
