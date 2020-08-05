@@ -8,6 +8,7 @@ import (
 
 	eventingtestlib "knative.dev/eventing/test/lib"
 	"knative.dev/eventing/test/lib/recordevents"
+	eventingresources "knative.dev/eventing/test/lib/resources"
 
 	"knative.dev/pkg/apis"
 	knativetest "knative.dev/pkg/test"
@@ -31,6 +32,8 @@ func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, ass
 	const (
 		recordEventPodName = "e2e-step-observer-logger-event-tracker"
 		taskRunName        = "e2e-test-step-observed-run"
+		brokerName         = "e2e-event-broker"
+		triggerName = "e2e-event-trigger"
 	)
 
 	client := eventingtestlib.Setup(t, false)
@@ -42,8 +45,22 @@ func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, ass
 	eventTracker, ePod := recordevents.StartEventRecordOrFail(client, recordEventPodName)
 	defer eventTracker.Cleanup()
 
+	broker := client.CreateBrokerV1OrFail(brokerName)
+	client.WaitForResourceReadyOrFail(broker.Name, eventingtestlib.BrokerTypeMeta)
+	_ = client.CreateTriggerV1OrFail(triggerName,
+		eventingresources.WithSubscriberServiceRefForTriggerV1(ePod.Name),
+		eventingresources.WithAttributesTriggerFilterV1(step.CloudEventSource, "", nil),
+		eventingresources.WithBrokerV1(broker.Name),
+	)
+	client.WaitForAllTestResourcesReadyOrFail()
+
+	brokerAddr, err := client.GetAddressableURI(broker.Name, eventingtestlib.BrokerTypeMeta)
+	if err != nil {
+		t.Fatalf("failed to get broker URI: %v", err)
+	}
+
 	// set default-sink
-	PatchDefaultCloudEventSinkOrFail(t, client.Kube, "http://"+client.GetServiceHost(ePod.Name), client.Namespace)
+	PatchDefaultCloudEventSinkOrFail(t, client.Kube, "http://"+brokerAddr, client.Namespace)
 
 	t.Logf("Creating Task and TaskRun in namespace %s", client.Namespace)
 

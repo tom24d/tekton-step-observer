@@ -38,6 +38,12 @@ echo "Installing tekton pipeline"
 kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v${VERSION_TEKTON}/release.yaml
 wait_until_pods_running tekton-pipelines || fail_test "tekton pipeline does not show up"
 
+header "Install Eventing"
+kubectl apply --filename https://github.com/knative/eventing/releases/download/v${EVENTING_VERSION}/eventing-crds.yaml
+kubectl apply --filename https://github.com/knative/eventing/releases/download/v${EVENTING_VERSION}/eventing-core.yaml
+kubectl apply --filename https://github.com/knative/eventing/releases/download/v${EVENTING_VERSION}/mt-channel-broker.yaml
+wait_until_pods_running knative-eventing || fail_test "Knative Eventing not up"
+
 
 # set up plugin
 echo "Installing step-observe-controller"
