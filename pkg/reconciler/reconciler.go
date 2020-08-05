@@ -75,7 +75,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, key string) error {
 // ReconcileStepEvent is entry point to reconcile taskrun to determine whether it should emit CloudEvent.
 func (r *Reconciler) reconcile(ctx context.Context, taskrun *v1beta1.TaskRun) error {
 	logger := logging.FromContext(ctx)
-	if taskrun.Status.TaskSpec == nil || len(stepresource.GetSteps(taskrun)) < 1 {
+	if taskrun.Status.TaskSpec == nil || len(stepresource.GetStepStatuses(taskrun)) < 1 {
 		logger.Infof("step events emission skipped as no step in the taskrun: %s", taskrun.Name)
 		return nil
 	}
@@ -147,7 +147,7 @@ func (r *Reconciler) ensureEventEmitted(
 	ctx context.Context, annotation *stepresource.EmissionStatuses, eventType stepresource.TektonPluginEventType,
 	run *v1beta1.TaskRun, index int,
 ) error {
-	name := stepresource.GetSteps(run)[index].Name
+	name := stepresource.GetStepStatuses(run)[index].Name
 	emissionStatus, err := annotation.GetStatus(name)
 	if err != nil {
 		return err
