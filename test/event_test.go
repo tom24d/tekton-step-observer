@@ -31,11 +31,15 @@ func Test_EventAssertion(t *testing.T) {
 	},
 	}
 
-	assertSetGetFunc := func(event resources.TektonPluginEventType) cetestv2.EventMatcher {
-		return cetestv2.AllOf(
-			cetestv2.HasType(event.String()),
-			cetestv2.HasSource(resources.CloudEventSource),
-		)
+	assertSetGetFunc := func(event resources.TektonPluginEventType, n int) AssertionSet {
+		return AssertionSet{
+			N: n,
+			Matchers: []cetestv2.EventMatcher{
+				cetestv2.HasType(event.String()),
+				cetestv2.HasSource(resources.CloudEventSource),
+			},
+			eventType: event,
+		}
 	}
 
 	testCases := map[string]struct {
@@ -55,8 +59,8 @@ func Test_EventAssertion(t *testing.T) {
 				}
 			},
 			matcherSets: []AssertionSet{
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepStarted)},
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepSucceeded)},
+				assertSetGetFunc(resources.CloudEventTypeStepStarted, 1),
+				assertSetGetFunc(resources.CloudEventTypeStepSucceeded, 1),
 			},
 		},
 		"double-task": {
@@ -72,10 +76,10 @@ func Test_EventAssertion(t *testing.T) {
 				}
 			},
 			matcherSets: []AssertionSet{
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepStarted)},
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepSucceeded)},
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepStarted)},
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepSucceeded)},
+				assertSetGetFunc(resources.CloudEventTypeStepStarted, 1),
+				assertSetGetFunc(resources.CloudEventTypeStepSucceeded, 1),
+				assertSetGetFunc(resources.CloudEventTypeStepStarted, 1),
+				assertSetGetFunc(resources.CloudEventTypeStepSucceeded, 1),
 			},
 		},
 		"double-task-fail": {
@@ -91,10 +95,10 @@ func Test_EventAssertion(t *testing.T) {
 				}
 			},
 			matcherSets: []AssertionSet{
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepStarted)},
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepSucceeded)},
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepStarted)},
-				{N: 1, MatcherGen: assertSetGetFunc(resources.CloudEventTypeStepFailed)},
+				assertSetGetFunc(resources.CloudEventTypeStepStarted, 1),
+				assertSetGetFunc(resources.CloudEventTypeStepSucceeded, 1),
+				assertSetGetFunc(resources.CloudEventTypeStepStarted, 1),
+				assertSetGetFunc(resources.CloudEventTypeStepFailed, 1),
 			},
 		},
 	}
