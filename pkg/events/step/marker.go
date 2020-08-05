@@ -1,21 +1,11 @@
 package step
 
 import (
-	"encoding/json"
 	"fmt"
 )
 
 type EmissionStatuses struct {
 	Statuses []EmissionStatus `json:"statuses"`
-}
-
-func (s EmissionStatuses) MarshalString() (string, error) {
-	data, err := json.Marshal(s)
-	return string(data), err
-}
-
-func UnmarshalString(str string, reported *EmissionStatuses) error {
-	return json.Unmarshal([]byte(str), reported)
 }
 
 func (s *EmissionStatuses) IsMarked(stepName string, eventType TektonPluginEventType) bool {

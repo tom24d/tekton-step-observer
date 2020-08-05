@@ -184,7 +184,7 @@ func (r *Reconciler) ensureEventEmitted(
 func initializeAnnotation(run *v1beta1.TaskRun) (*stepresource.EmissionStatuses, error) {
 	annotation := &stepresource.EmissionStatuses{}
 	if val, ok := run.Annotations[AnnotationKey]; ok {
-		err := stepresource.UnmarshalString(val, annotation)
+		err := json.Unmarshal([]byte(val), annotation)
 		if err != nil {
 			return nil, fmt.Errorf("failed to unmarshal annotation: %v", err)
 		}
@@ -203,13 +203,13 @@ func initializeAnnotation(run *v1beta1.TaskRun) (*stepresource.EmissionStatuses,
 }
 
 func getPatch(state *stepresource.EmissionStatuses) ([]byte, error) {
-	data, err := state.MarshalString()
+	data, err := json.Marshal(state)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal EmissionStatuses object: %v", err)
 	}
 	tr := v1beta1.TaskRun{}
 	tr.Annotations = make(map[string]string)
-	tr.Annotations[AnnotationKey] = data
+	tr.Annotations[AnnotationKey] = string(data)
 	return json.Marshal(tr)
 }
 
