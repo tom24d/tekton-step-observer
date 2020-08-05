@@ -84,7 +84,7 @@ func Test_GetTime_Running(t *testing.T) {
 		Name: step1,
 	}
 
-	got, err := GetTime(&stepStateRunning, CloudEventTypeStepStarted)
+	got, err := GetEventTime(&stepStateRunning, CloudEventTypeStepStarted)
 	if err != nil {
 		t.Fatalf("error occured: %v", err)
 	}
@@ -111,7 +111,7 @@ func Test_GetTime_Terminated(t *testing.T) {
 		Name: step1,
 	}
 	// succeeded
-	got, err := GetTime(&stepStateRunning, CloudEventTypeStepSucceeded)
+	got, err := GetEventTime(&stepStateRunning, CloudEventTypeStepSucceeded)
 	if err != nil {
 		t.Fatalf("error occured: %v", err)
 	}
@@ -120,7 +120,7 @@ func Test_GetTime_Terminated(t *testing.T) {
 	}
 
 	// failed
-	got, err = GetTime(&stepStateRunning, CloudEventTypeStepFailed)
+	got, err = GetEventTime(&stepStateRunning, CloudEventTypeStepFailed)
 	if err != nil {
 		t.Fatalf("error occured: %v", err)
 	}

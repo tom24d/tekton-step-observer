@@ -80,9 +80,11 @@ func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, ass
 
 	// multi-assert event
 	for i, s := range assertionSet {
-		tm, err := step.GetTime(&run.Status.Steps[i/2], s.eventType)
+		tm, err := step.GetEventTime(&run.Status.Steps[i/2], s.eventType)
 		if err == nil {
 			s.Matchers = append(s.Matchers, cetestv2.HasTime(*tm))
+		} else {
+			t.Logf("%v", err)
 		}
 		eventTracker.AssertExact(s.N, recordevents.MatchEvent(cetestv2.AllOf(s.Matchers...)))
 	}
