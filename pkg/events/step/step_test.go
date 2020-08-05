@@ -93,7 +93,6 @@ func Test_GetTime_Running(t *testing.T) {
 	}
 }
 
-
 func Test_GetTime_Terminated(t *testing.T) {
 	const step1 = "step1"
 	now := time.Now()

@@ -1,18 +1,16 @@
 package test
 
 import (
-	"testing"
 	"encoding/json"
+	"testing"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 
-
 	pkgTest "knative.dev/pkg/test"
 )
 
-
-func PatchDefaultCloudEventSinkOrFail(t *testing.T, c *pkgTest.KubeClient ,sink string, ns string) {
+func PatchDefaultCloudEventSinkOrFail(t *testing.T, c *pkgTest.KubeClient, sink string, ns string) {
 
 	cm := corev1.ConfigMap{
 		Data: map[string]string{

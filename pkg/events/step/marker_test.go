@@ -8,13 +8,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestUnmarshalString(t *testing.T) {
-
-}
-
-func TestEmissionStatuses_MarshalString(t *testing.T) {
-}
-
 func TestEmissionStatuses_mark_check(t *testing.T) {
 	const name = "hello1"
 	const marking = CloudEventTypeStepFailed
