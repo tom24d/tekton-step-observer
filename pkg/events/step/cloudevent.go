@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	CloudEventSource = "/api/v1/namespaces/tekton-pipelines/pods/tekton-step-observer"
+	CloudEventSource = "/api/v1/namespaces/tekton-pipelines/deployments/tekton-step-observer"
 )
 
 type TektonPluginEventType string
