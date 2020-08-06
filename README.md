@@ -20,7 +20,7 @@ The example of CloudEvent is:
  Context Attributes,
    specversion: 1.0
    type: dev.tekton.events.plugin.step.succeeded.v1
-   source: /api/v1/namespaces/tekton-pipelines/pods/tekton-step-observer
+   source: /api/v1/namespaces/tekton-pipelines/deployments/tekton-step-observer
    id: 4706aaf2-7432-47ce-8d44-e51ac692a9c5
    time: 2020-08-03T07:37:47Z
    datacontenttype: application/json

@@ -17,16 +17,16 @@ import (
 )
 
 const (
-	CloudEventSource = "/api/v1/namespaces/tekton-pipelines/pods/tekton-step-observer"
+	CloudEventSource = "/api/v1/namespaces/tekton-pipelines/deployments/tekton-step-observer"
 )
 
 type TektonPluginEventType string
 
 const (
-	CloudEventTypeStepStarted   TektonPluginEventType = "dev.tekton.events.plugin.step.started.v1"
-	CloudEventTypeStepFailed    TektonPluginEventType = "dev.tekton.events.plugin.step.failed.v1"
-	CloudEventTypeStepSucceeded TektonPluginEventType = "dev.tekton.events.plugin.step.succeeded.v1"
-	CloudEventTypeStepSkipped   TektonPluginEventType = "dev.tekton.events.plugin.step.skipped.v1"
+	CloudEventTypeStepStarted   TektonPluginEventType = "dev.tekton.event.plugin.step.started.v1"
+	CloudEventTypeStepFailed    TektonPluginEventType = "dev.tekton.event.plugin.step.failed.v1"
+	CloudEventTypeStepSucceeded TektonPluginEventType = "dev.tekton.event.plugin.step.succeeded.v1"
+	CloudEventTypeStepSkipped   TektonPluginEventType = "dev.tekton.event.plugin.step.skipped.v1"
 )
 
 func (c TektonPluginEventType) String() string {
