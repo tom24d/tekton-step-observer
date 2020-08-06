@@ -120,14 +120,14 @@ func Test_EventAssertion(t *testing.T) {
 				assertSetGetFunc(step.CloudEventTypeStepSkipped, 2),
 			},
 		},
-		"success-50": {
+		"success-25": {
 			task: func(namespace string) *v1beta1.Task {
 				return &v1beta1.Task{
-					ObjectMeta: metav1.ObjectMeta{Name: "success-50", Namespace: namespace},
+					ObjectMeta: metav1.ObjectMeta{Name: "success-25", Namespace: namespace},
 					Spec: v1beta1.TaskSpec{
 						// This was the digest of the latest tag as of 8/12/2019
 						Steps: func() []v1beta1.Step {
-							steps := make([]v1beta1.Step, 50)
+							steps := make([]v1beta1.Step, 25)
 							for i := range steps {
 								steps[i] = successStep
 							}
@@ -137,8 +137,8 @@ func Test_EventAssertion(t *testing.T) {
 				}
 			},
 			matcherSets: []AssertionSet{
-				assertSetGetFunc(step.CloudEventTypeStepStarted, 50),
-				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 50),
+				assertSetGetFunc(step.CloudEventTypeStepStarted, 25),
+				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 25),
 			},
 		},
 	}
