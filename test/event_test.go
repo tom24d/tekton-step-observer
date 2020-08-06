@@ -52,7 +52,7 @@ func Test_EventAssertion(t *testing.T) {
 		"success": {
 			task: func(namespace string) *v1beta1.Task {
 				return &v1beta1.Task{
-					ObjectMeta: metav1.ObjectMeta{Name: "single-task", Namespace: namespace},
+					ObjectMeta: metav1.ObjectMeta{Name: "success", Namespace: namespace},
 					Spec: v1beta1.TaskSpec{
 						// This was the digest of the latest tag as of 8/12/2019
 						Steps: []v1beta1.Step{
@@ -69,7 +69,7 @@ func Test_EventAssertion(t *testing.T) {
 		"success-success": {
 			task: func(namespace string) *v1beta1.Task {
 				return &v1beta1.Task{
-					ObjectMeta: metav1.ObjectMeta{Name: "double-task", Namespace: namespace},
+					ObjectMeta: metav1.ObjectMeta{Name: "success-success", Namespace: namespace},
 					Spec: v1beta1.TaskSpec{
 						// This was the digest of the latest tag as of 8/12/2019
 						Steps: []v1beta1.Step{
@@ -86,7 +86,7 @@ func Test_EventAssertion(t *testing.T) {
 		"success-fail": {
 			task: func(namespace string) *v1beta1.Task {
 				return &v1beta1.Task{
-					ObjectMeta: metav1.ObjectMeta{Name: "double-task-fail", Namespace: namespace},
+					ObjectMeta: metav1.ObjectMeta{Name: "success-fail", Namespace: namespace},
 					Spec: v1beta1.TaskSpec{
 						// This was the digest of the latest tag as of 8/12/2019
 						Steps: []v1beta1.Step{
@@ -101,14 +101,14 @@ func Test_EventAssertion(t *testing.T) {
 				assertSetGetFunc(step.CloudEventTypeStepFailed, 1),
 			},
 		},
-		"success-fail-skip": {
+		"success-fail-skip-skip": {
 			task: func(namespace string) *v1beta1.Task {
 				return &v1beta1.Task{
-					ObjectMeta: metav1.ObjectMeta{Name: "double-task-fail", Namespace: namespace},
+					ObjectMeta: metav1.ObjectMeta{Name: "success-fail-skip-skip", Namespace: namespace},
 					Spec: v1beta1.TaskSpec{
 						// This was the digest of the latest tag as of 8/12/2019
 						Steps: []v1beta1.Step{
-							successStep, failStep, successStep,
+							successStep, failStep, successStep, failStep,
 						},
 					},
 				}
@@ -117,7 +117,28 @@ func Test_EventAssertion(t *testing.T) {
 				assertSetGetFunc(step.CloudEventTypeStepStarted, 2),
 				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 1),
 				assertSetGetFunc(step.CloudEventTypeStepFailed, 1),
-				assertSetGetFunc(step.CloudEventTypeStepSkipped, 1),
+				assertSetGetFunc(step.CloudEventTypeStepSkipped, 2),
+			},
+		},
+		"success-50": {
+			task: func(namespace string) *v1beta1.Task {
+				return &v1beta1.Task{
+					ObjectMeta: metav1.ObjectMeta{Name: "success-50", Namespace: namespace},
+					Spec: v1beta1.TaskSpec{
+						// This was the digest of the latest tag as of 8/12/2019
+						Steps: func() []v1beta1.Step {
+							steps := make([]v1beta1.Step, 50)
+							for i := range steps {
+								steps[i] = successStep
+							}
+							return steps
+						}(),
+					},
+				}
+			},
+			matcherSets: []AssertionSet{
+				assertSetGetFunc(step.CloudEventTypeStepStarted, 50),
+				assertSetGetFunc(step.CloudEventTypeStepSucceeded, 50),
 			},
 		},
 	}
