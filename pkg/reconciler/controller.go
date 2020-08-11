@@ -2,14 +2,14 @@ package reconciler
 
 import (
 	"context"
-	"time"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/tools/cache"
 
 	"github.com/tektoncd/pipeline/pkg/apis/config"
 	pipelineclient "github.com/tektoncd/pipeline/pkg/client/injection/client"
 	taskruninformer "github.com/tektoncd/pipeline/pkg/client/injection/informers/pipeline/v1beta1/taskrun"
 	cloudeventclient "github.com/tektoncd/pipeline/pkg/reconciler/events/cloudevent"
-
-	"k8s.io/client-go/tools/cache"
 
 	kubeclient "knative.dev/pkg/client/injection/kube/client"
 	"knative.dev/pkg/configmap"
@@ -41,8 +41,17 @@ func NewController(ctx context.Context, cm configmap.Watcher) *controller.Impl {
 	taskrunInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: impl.Enqueue,
 		UpdateFunc: func(first, second interface{}) {
-			// TODO remove this if the problem solved. See: https://github.com/tom24d/step-observe-controller/issues/8
-			impl.EnqueueAfter(second, 100*time.Millisecond)
+			oldObj, ok := first.(metav1.ObjectMeta)
+			if !ok {
+				return
+			}
+			newObj, ok := second.(metav1.ObjectMeta)
+			if !ok {
+				return
+			}
+			if oldObj.ResourceVersion != newObj.ResourceVersion {
+				impl.Enqueue(second)
+			}
 		},
 	})
 
