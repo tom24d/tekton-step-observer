@@ -23,7 +23,7 @@ func Test_EventAssertion(t *testing.T) {
 	successStep := v1beta1.Step{Container: corev1.Container{
 		Image:   "busybox@sha256:895ab622e92e18d6b461d671081757af7dbaa3b00e3e28e12505af7817f73649",
 		Command: []string{"/bin/sh"},
-		Args:    []string{"-c", "echo hello1"},
+		Args:    []string{"-c", "echo hello1 && sleep 1"},
 	},
 	}
 
