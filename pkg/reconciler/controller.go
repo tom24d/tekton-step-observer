@@ -2,6 +2,7 @@ package reconciler
 
 import (
 	"context"
+	"time"
 
 	"k8s.io/client-go/tools/cache"
 
@@ -50,7 +51,7 @@ func NewController(ctx context.Context, cm configmap.Watcher) *controller.Impl {
 				return
 			}
 			if oldObj.GetResourceVersion() != newObj.GetResourceVersion() {
-				impl.Enqueue(second)
+				impl.EnqueueAfter(second, 100*time.Microsecond)
 			}
 		},
 	})
