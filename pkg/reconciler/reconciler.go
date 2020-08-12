@@ -98,6 +98,7 @@ func (r *Reconciler) reconcile(ctx context.Context, taskrun *v1beta1.TaskRun) er
 	_, err = r.pipelineClient.TektonV1beta1().TaskRuns(taskrun.Namespace).Patch(taskrun.Name, types.MergePatchType, patch)
 	if err != nil {
 		logger.Errorf("failed to PATCH taskrun: %v", err)
+		return err
 	}
 	return nil
 }
