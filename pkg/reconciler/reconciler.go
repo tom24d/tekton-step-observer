@@ -171,7 +171,7 @@ func (r *Reconciler) ensureEventEmitted(
 			},
 			Log: log,
 		}
-		go data.Emit(ctx, eventType)
+		go data.Emit(ctx, eventType, fmt.Sprintf("%s-%s-%s", run.UID, s2[index].Name, eventType.String()))
 		err = emissionStatus.MarkEvent(eventType)
 		if err != nil {
 			return err

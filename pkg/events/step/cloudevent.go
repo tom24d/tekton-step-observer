@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	CloudEventSource = "/api/v1/namespaces/tekton-pipelines/deployments/tekton-step-observer"
+	CloudEventSource = "github.com/tom24d/step-observe-controller"
 )
 
 type TektonPluginEventType string
@@ -40,7 +40,7 @@ type TektonStepCloudEvent struct {
 	StepState *v1beta1.StepState      `json:"stepState,omitempty"`
 }
 
-func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginEventType) {
+func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginEventType, id string) {
 	logger := logging.FromContext(ctx)
 	configs := config.FromContextOrDefaults(ctx)
 	sendCloudEvents := (configs.Defaults.DefaultCloudEventsSink != "")
@@ -54,6 +54,7 @@ func (d *TektonStepCloudEvent) Emit(ctx context.Context, eventType TektonPluginE
 	event := cloudevents.NewEvent()
 	event.SetType(eventType.String())
 	event.SetSource(CloudEventSource)
+	event.SetID(id)
 
 	if tm, err := GetEventTime(d.StepState, eventType); err != nil {
 		logger.Errorf("failed to get time: %v", err)

@@ -74,7 +74,7 @@ func TestEmit(t *testing.T) {
 				}
 				ctx = config.ToContext(ctx, cfg)
 
-				go eventData.Emit(ctx, et)
+				go eventData.Emit(ctx, et, t.Name())
 				if tc.wantCloudEvent {
 					if err := checkCloudEvents(t, &fakeClient, t.Name(), `(s?)`+et.String()); err != nil {
 						t.Fatalf(err.Error())

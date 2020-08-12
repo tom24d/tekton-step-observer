@@ -108,7 +108,7 @@ func EventAssertion(t *testing.T, task func(namespace string) *v1beta1.Task, ass
 		//} else {
 		//	t.Logf("%v", err)
 		//}
-		eventTracker.AssertExact(s.N, recordevents.MatchEvent(cetestv2.AllOf(s.Matchers...)))
+		eventTracker.AssertAtLeast(s.N, recordevents.MatchEvent(cetestv2.AllOf(s.Matchers...)))
 		//if s.eventType != step.CloudEventTypeStepStarted {
 		//	index += 1
 		//}

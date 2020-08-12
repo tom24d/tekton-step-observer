@@ -19,28 +19,32 @@ The example of CloudEvent is:
  Validation: valid
  Context Attributes,
    specversion: 1.0
-   type: dev.tekton.events.plugin.step.succeeded.v1
-   source: /api/v1/namespaces/tekton-pipelines/deployments/tekton-step-observer
-   id: 4706aaf2-7432-47ce-8d44-e51ac692a9c5
-   time: 2020-08-03T07:37:47Z
+   type: dev.tekton.event.plugin.step.succeeded.v1
+   source: github.com/tom24d/step-observe-controller
+   id: 50df8d70-8c11-4cd4-8fdf-3aa4cb287408-unnamed-0-dev.tekton.event.plugin.step.succeeded.v1
+   time: 2020-08-12T12:07:54Z
    datacontenttype: application/json
+ Extensions,
+   knativearrivaltime: 2020-08-12T12:07:55.3392277Z
+   knativehistory: inmemorychannel-kne-trigger-kn-channel.test-event-assertion-success-fail-skip-skip-in-memory-chan7f5q7.svc.cluster.local
  Data,
    {
      "podRef": {
        "kind": "Pod",
-       "namespace": "default",
-       "name": "hello1-run-bhx2s-pod-8hsvm",
+       "namespace": "test-event-assertion-success-fail-skip-skip-in-memory-chan7f5q7",
+       "name": "e2e-test-step-observed-run-pod-wrpkl",
        "apiVersion": "v1"
      },
-     "log": "Hello step 1\n",
+     "log": "hello1\n",
      "step": {
-       "name": "hello1",
-       "image": "ubuntu",
+       "name": "",
+       "image": "busybox@sha256:895ab622e92e18d6b461d671081757af7dbaa3b00e3e28e12505af7817f73649",
        "command": [
-         "echo"
+         "/bin/sh"
        ],
        "args": [
-         "Hello step 1"
+         "-c",
+         "echo hello1"
        ],
        "resources": {}
      },
@@ -48,13 +52,15 @@ The example of CloudEvent is:
        "terminated": {
          "exitCode": 0,
          "reason": "Completed",
-         "startedAt": "2020-08-03T07:37:47Z",
-         "finishedAt": "2020-08-03T07:37:47Z",
-         "containerID": "containerd://9e6bdf350ef6c6744b7b920771a2475b4a595210dc0c6b6f5f0e50bb57413308"
+         "startedAt": "2020-08-12T12:07:54Z",
+         "finishedAt": "2020-08-12T12:07:54Z",
+         "containerID": "containerd://3548dcaf6287d647cbd775d9de6488e2024cbb8f436f71f78a1e4e8bab0eece5"
        },
-       "name": "hello1",
-       "container": "step-hello1",
-       "imageID": "docker.io/library/ubuntu@sha256:5d1d5407f353843ecf8b16524bc5565aa332e9e6a1297c73a92d3e754b8a636d"
+       "name": "unnamed-0",
+       "container": "step-unnamed-0",
+       "imageID": "docker.io/library/busybox@sha256:895ab622e92e18d6b461d671081757af7dbaa3b00e3e28e12505af7817f73649"
+     }
+   }
 ```
 
 More info will come soon.  
