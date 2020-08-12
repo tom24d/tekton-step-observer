@@ -51,6 +51,7 @@ func NewController(ctx context.Context, cm configmap.Watcher) *controller.Impl {
 				return
 			}
 			if oldObj.GetResourceVersion() != newObj.GetResourceVersion() {
+				// TODO remove this if the problem solved. See: https://github.com/tom24d/step-observe-controller/issues/8
 				impl.EnqueueAfter(second, time.Second)
 			}
 		},
