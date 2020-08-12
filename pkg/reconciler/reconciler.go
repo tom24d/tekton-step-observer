@@ -98,6 +98,7 @@ func (r *Reconciler) reconcile(ctx context.Context, taskrun *v1beta1.TaskRun) er
 	_, err = r.pipelineClient.TektonV1beta1().TaskRuns(taskrun.Namespace).Patch(taskrun.Name, types.MergePatchType, patch)
 	if err != nil {
 		logger.Errorf("failed to PATCH taskrun: %v", err)
+		return err
 	}
 	return nil
 }
@@ -106,11 +107,9 @@ func (r *Reconciler) reconcileSteps(ctx context.Context, sent *stepresource.Emis
 	var errs *multierr.Error
 	for i, step := range stepresource.GetStepStatuses(taskrun) {
 		// start
-		if step.ContainerState.Running != nil {
-			// (Running) emit&mark started if i=0
-			if i == 0 && !taskrun.Status.StartTime.IsZero() {
-				errs = multierr.Append(r.ensureEventEmitted(ctx, sent, stepresource.CloudEventTypeStepStarted, taskrun, i))
-			}
+		// emit&mark started if i=0 && !taskrun.Status.StartTime.IsZero()
+		if i == 0 && !taskrun.Status.StartTime.IsZero() {
+			errs = multierr.Append(r.ensureEventEmitted(ctx, sent, stepresource.CloudEventTypeStepStarted, taskrun, i))
 		}
 		// emit&mark started if i!=0 && i-1 step marked as succeeded
 		if i != 0 && sent.IsMarked(stepresource.GetStepStatuses(taskrun)[i-1].Name, stepresource.CloudEventTypeStepSucceeded) {
