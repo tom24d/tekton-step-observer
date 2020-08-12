@@ -51,7 +51,7 @@ func NewController(ctx context.Context, cm configmap.Watcher) *controller.Impl {
 				return
 			}
 			if oldObj.GetResourceVersion() != newObj.GetResourceVersion() {
-				impl.EnqueueAfter(second, 100*time.Microsecond)
+				impl.EnqueueAfter(second, time.Second)
 			}
 		},
 	})
