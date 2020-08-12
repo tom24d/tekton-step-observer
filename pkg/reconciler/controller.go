@@ -3,7 +3,6 @@ package reconciler
 import (
 	"context"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/cache"
 
 	"github.com/tektoncd/pipeline/pkg/apis/config"
@@ -14,6 +13,7 @@ import (
 	kubeclient "knative.dev/pkg/client/injection/kube/client"
 	"knative.dev/pkg/configmap"
 	"knative.dev/pkg/controller"
+	"knative.dev/pkg/kmeta"
 	"knative.dev/pkg/logging"
 )
 
@@ -41,15 +41,15 @@ func NewController(ctx context.Context, cm configmap.Watcher) *controller.Impl {
 	taskrunInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: impl.Enqueue,
 		UpdateFunc: func(first, second interface{}) {
-			oldObj, ok := first.(metav1.ObjectMeta)
+			oldObj, ok := first.(kmeta.Accessor)
 			if !ok {
 				return
 			}
-			newObj, ok := second.(metav1.ObjectMeta)
+			newObj, ok := second.(kmeta.Accessor)
 			if !ok {
 				return
 			}
-			if oldObj.ResourceVersion != newObj.ResourceVersion {
+			if oldObj.GetResourceVersion() != newObj.GetResourceVersion() {
 				impl.Enqueue(second)
 			}
 		},
