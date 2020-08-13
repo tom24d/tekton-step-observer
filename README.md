@@ -1,9 +1,36 @@
-# step-observe-controller  
-[WIP] Observer plugin to report CloudEvents at step execution level for Tekton  
+# tekton-step-observer  
+Observer plugin to emit [CloudEvents](https://cloudevents.io/) at step execution level for Tekton  
+
+## Caution
+```
+The purpose of this controller is to explore/share  
+more use cases to consume CloudEvents at step execution level.
+The author does not assume any production/development environment nor pushing to the upstream.
+```
+
+## Installation
+`tekton-step-observer` requires TektonCD Pipeline on your Kubernetes cluster.
+Plus, you need a build tool [ko](https://github.com/google/ko).
+
+For installation, [after TektonCD Pipeline installed](https://tekton.dev/docs/getting-started/), run:
+```shell script
+ko apply -f config
+```
+then `ko` starts build and deploy the resources to the cluster.
+
+For uninstallation, run:
+```shell script
+kubectl delete -f config
+```
+then all resources gets removed from the cluster.
+Note that this is a "plugin", hence no effect on TektonCD Pipelines.
+
 
 ## Concept  
 
-This plugin creates a controller to watch TaskRun/Pod(TBD), then send CloudEvents to specified `default-cloud-event-sink` when it detects a change of state of each step.  
+This plugin creates a controller to watch TaskRun, 
+then send CloudEvents to the read [`default-cloud-event-sink`](https://github.com/tektoncd/pipeline/blob/50ed02b4c2b96656355548acea878a0d20e89750/config/config-defaults.yaml#L59) 
+when it detects a change of state of each step.  
 
 Supported CloudEvents event type are:
 ```
@@ -13,8 +40,28 @@ dev.tekton.event.plugin.step.succeeded.v1
 dev.tekton.event.plugin.step.skipped.v1
 ```
 
+When it detects the state for any emission, it gathers its corresponding defined information such as 
+[v1beta1.Step](https://github.com/tektoncd/pipeline/blob/50ed02b4c2b96656355548acea878a0d20e89750/pkg/apis/pipeline/v1beta1/task_types.go#L119), 
+[v1beta1.StepState](https://github.com/tektoncd/pipeline/blob/50ed02b4c2b96656355548acea878a0d20e89750/pkg/apis/pipeline/v1beta1/taskrun_types.go#L258), 
+PodReference and 
+log of the step. 
+
+The controller updates TaskRun resource to save its emission state for each event in `metadata.annotation`.  
+
+Although identity of each CloudEvent is always guaranteed in CloudEvent ID attribute,  
+sometimes duplication of event emission occurs due to known issue#8.
+
+
+---
+
+### Appendix
+`tekton-step-observer` uses knative/pkg for its infrastructure to compose a basis of kubernetes controller.  
+They provide several metrics such as reconciliation count, time, etc.
+For measuring any affection on reconciliation, the [config/monitoring](./config/monitoring) directory contains Prometheus Scrape config.
+
+
 The example of CloudEvent is:
-```json
+```
  ☁️  cloudevents.Event
  Validation: valid
  Context Attributes,
@@ -62,5 +109,3 @@ The example of CloudEvent is:
      }
    }
 ```
-
-More info will come soon.  
