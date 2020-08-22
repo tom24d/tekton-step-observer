@@ -28,7 +28,8 @@ source ${REPO_ROOT_DIR}/vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 header "Publish test image"
 sed -i 's@knative.dev/eventing/test/test_images@github.com/tom24d/step-observe-controller/vendor/knative.dev/eventing/test/test_images@g' "${VENDOR_EVENTING_TEST_IMAGES}"*/*.yaml
 $(dirname $0)/upload-test-images.sh ${VENDOR_EVENTING_TEST_IMAGES} e2e || fail_test "Error uploading eventing test images"
-
+# rollback
+sed -i 's@github.com/tom24d/step-observe-controller/vendor/knative.dev/eventing/test/test_images@knative.dev/eventing/test/test_images@g' "${VENDOR_EVENTING_TEST_IMAGES}"*/*.yaml
 
 header "Setting up environment"
 
