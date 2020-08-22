@@ -18,7 +18,6 @@ REPO_ROOT_DIR=$(git rev-parse --show-toplevel)
 # Vendored eventing test image.
 readonly VENDOR_EVENTING_TEST_IMAGES="vendor/knative.dev/eventing/test/test_images/"
 readonly PLUGIN_INSTALLATION_CONFIG=${REPO_ROOT_DIR}/config/
-readonly VERSION_TEKTON="0.15.0"
 readonly VERSION_EVENTING="0.16.1"
 
 source ${REPO_ROOT_DIR}/vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
@@ -36,7 +35,7 @@ $(dirname $0)/upload-test-images.sh ${VENDOR_EVENTING_TEST_IMAGES} e2e || fail_t
 header "Setting up environment"
 
 echo "Installing tekton pipeline"
-kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v${VERSION_TEKTON}/release.yaml
+kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/latest/release.yaml
 wait_until_pods_running tekton-pipelines || fail_test "tekton pipeline does not show up"
 
 header "Install Eventing"
