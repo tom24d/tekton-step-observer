@@ -22,8 +22,6 @@ readonly VERSION_EVENTING="0.16.1"
 
 source ${REPO_ROOT_DIR}/vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 
-# Script entry point.
-#initialize $@
 
 # This vendors test image code from eventing, in order to use ko to resolve them into Docker images, the
 # path has to be a GOPATH.
@@ -51,16 +49,10 @@ echo "Installing step-observe-controller"
 ko apply -f "${PLUGIN_INSTALLATION_CONFIG}"
 wait_until_pods_running tekton-pipelines || fail_test "step-observe-controller does not show up"
 
-failed=0
-
 # Run the integration tests
 header "Running Go e2e tests"
-go_test_e2e -timeout=15m ./test/... -channels=messaging.knative.dev/v1:InMemoryChannel || failed=1
+go_test_e2e -timeout=15m ./test/... -channels=messaging.knative.dev/v1:InMemoryChannel || fail_test "go test failed"
 
-# Run these _after_ the integration tests b/c they don't quite work all the way
-# and they cause a lot of noise in the logs, making it harder to debug integration
-# test failures.
-#go_test_e2e -tags=examples -timeout=20m ./test/ || failed=1
 
 (( failed )) && fail_test
 success
