@@ -230,7 +230,7 @@ github.com/spf13/pflag
 # github.com/stretchr/testify v1.5.1
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/tektoncd/pipeline v0.15.1-0.20200813075706-8f586048034c
+# github.com/tektoncd/pipeline v0.15.1-0.20200821170409-0de5401ba36c
 ## explicit
 github.com/tektoncd/pipeline/pkg/apis/config
 github.com/tektoncd/pipeline/pkg/apis/pipeline
@@ -293,7 +293,7 @@ github.com/tektoncd/pipeline/pkg/reconciler/pipeline/dag
 github.com/tektoncd/pipeline/pkg/substitution
 github.com/tektoncd/pipeline/test
 github.com/tektoncd/pipeline/test/diff
-# github.com/tektoncd/plumbing v0.0.0-20200813153606-bde34da7abde
+# github.com/tektoncd/plumbing v0.0.0-20200821155409-9fd05abfe191
 ## explicit
 github.com/tektoncd/plumbing
 github.com/tektoncd/plumbing/scripts
@@ -903,7 +903,7 @@ k8s.io/utils/buffer
 k8s.io/utils/integer
 k8s.io/utils/pointer
 k8s.io/utils/trace
-# knative.dev/eventing v0.16.1
+# knative.dev/eventing v0.16.2-0.20200821190047-62aa591219cd
 ## explicit
 knative.dev/eventing/config/core/configmaps
 knative.dev/eventing/pkg/apis/config
