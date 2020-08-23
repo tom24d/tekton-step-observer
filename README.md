@@ -109,3 +109,6 @@ The example of CloudEvent is:
      }
    }
 ```
+
+Initial idea come from [JBoss Community proposal](https://docs.jboss.org/display/GSOC/Google+Summer+of+Code+2020+ideas#GoogleSummerofCode2020ideas-Knative-Eventsourcesforcontainerregistries,pipelinesandbuilds)  
+This work is a part of [Google Summer of Code 2020](https://summerofcode.withgoogle.com/projects/#5186775800086528)  
