@@ -986,12 +986,12 @@ github.com/syndtr/gocapability v0.0.0-20170704070218-db04d3cc01c8/go.mod h1:hkRG
 github.com/tdakkota/asciicheck v0.0.0-20200416190851-d7f85be797a2/go.mod h1:yHp0ai0Z9gUljN3o0xMhYJnH/IcvkdTBOX2fmJ93JEM=
 github.com/tdakkota/asciicheck v0.0.0-20200416200610-e657995f937b/go.mod h1:yHp0ai0Z9gUljN3o0xMhYJnH/IcvkdTBOX2fmJ93JEM=
 github.com/tektoncd/pipeline v0.11.0/go.mod h1:hlkH32S92+/UODROH0dmxzyuMxfRFp/Nc3e29MewLn8=
-github.com/tektoncd/pipeline v0.15.1-0.20200827134110-9be0bb349825 h1:RGb/MTzrtBmZ/xFjQzo0bSR8HwWbZFKcf4JyobG6sRs=
-github.com/tektoncd/pipeline v0.15.1-0.20200827134110-9be0bb349825/go.mod h1:5vn2IJH46ntWTKLkwNbtZNd38FYkNP0cBtu5sgqm5xA=
+github.com/tektoncd/pipeline v0.15.1-0.20200904132113-bf4d14d32dd4 h1:QVkTNXDAnjXo+G2ITD7QQwyEGp2BY26Occec2Yk706E=
+github.com/tektoncd/pipeline v0.15.1-0.20200904132113-bf4d14d32dd4/go.mod h1:5vn2IJH46ntWTKLkwNbtZNd38FYkNP0cBtu5sgqm5xA=
 github.com/tektoncd/plumbing v0.0.0-20200217163359-cd0db6e567d2/go.mod h1:QZHgU07PRBTRF6N57w4+ApRu8OgfYLFNqCDlfEZaD9Y=
 github.com/tektoncd/plumbing v0.0.0-20200430135134-e53521e1d887/go.mod h1:cZPJIeTIoP7UPTxQyTQLs7VE1TiXJSNj0te+If4Q+jI=
-github.com/tektoncd/plumbing v0.0.0-20200828211711-efd006b76cb1 h1:xt5SIbowMPdmCCr2xPweEWWmQ49Nh+j1aCww8N6Q70A=
-github.com/tektoncd/plumbing v0.0.0-20200828211711-efd006b76cb1/go.mod h1:cZPJIeTIoP7UPTxQyTQLs7VE1TiXJSNj0te+If4Q+jI=
+github.com/tektoncd/plumbing v0.0.0-20200904091413-381152d985ea h1:TRmyCW2jWXcmNv8c1JB1D/Ft3fcPU8jTyFdBKDGrvDY=
+github.com/tektoncd/plumbing v0.0.0-20200904091413-381152d985ea/go.mod h1:cZPJIeTIoP7UPTxQyTQLs7VE1TiXJSNj0te+If4Q+jI=
 github.com/tektoncd/plumbing/pipelinerun-logs v0.0.0-20191206114338-712d544c2c21/go.mod h1:S62EUWtqmejjJgUMOGB1CCCHRp6C706laH06BoALkzU=
 github.com/tetafro/godot v0.3.7/go.mod h1:/7NLHhv08H1+8DNj0MElpAACw1ajsCuf3TKNQxA5S+0=
 github.com/tetafro/godot v0.4.2/go.mod h1:/7NLHhv08H1+8DNj0MElpAACw1ajsCuf3TKNQxA5S+0=
@@ -1582,8 +1582,8 @@ k8s.io/utils v0.0.0-20191114184206-e782cd3c129f/go.mod h1:sZAwmy6armz5eXlNoLmJcl
 k8s.io/utils v0.0.0-20200124190032-861946025e34 h1:HjlUD6M0K3P8nRXmr2B9o4F9dUy9TCj/aEpReeyi6+k=
 k8s.io/utils v0.0.0-20200124190032-861946025e34/go.mod h1:sZAwmy6armz5eXlNoLmJcl4F1QuKu7sr+mFQ0byX7Ew=
 knative.dev/caching v0.0.0-20200116200605-67bca2c83dfa/go.mod h1:dHXFU6CGlLlbzaWc32g80cR92iuBSpsslDNBWI8C7eg=
-knative.dev/eventing v0.16.2-0.20200827182806-c6f3501d66dc h1:lEdcPg4P/3X/Blzfh6TOEMqJVyBBmLFSJWXjosHPFLw=
-knative.dev/eventing v0.16.2-0.20200827182806-c6f3501d66dc/go.mod h1:jU8gg/VL4ZBDkAlqTPaBMnoC1Vrw/2ue1n4vc19EN5k=
+knative.dev/eventing v0.16.2 h1:IgPvW8g6gZjSfgd41EdFfJHI+k2t9j0gJpbPVhHd7BQ=
+knative.dev/eventing v0.16.2/go.mod h1:jU8gg/VL4ZBDkAlqTPaBMnoC1Vrw/2ue1n4vc19EN5k=
 knative.dev/eventing-contrib v0.11.2/go.mod h1:SnXZgSGgMSMLNFTwTnpaOH7hXDzTFtw0J8OmHflNx3g=
 knative.dev/pkg v0.0.0-20200207155214-fef852970f43/go.mod h1:pgODObA1dTyhNoFxPZTTjNWfx6F0aKsKzn+vaT9XO/Q=
 knative.dev/pkg v0.0.0-20200702222342-ea4d6e985ba0 h1:+k2ADqygEgy5BIEahUUEgdY3LbQkaRxbObIO1ZjQswE=
