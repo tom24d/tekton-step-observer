@@ -34,10 +34,10 @@ when it detects a change of state of each step.
 
 Supported CloudEvents event type are:
 ```
-dev.tekton.event.plugin.step.started.v1  
-dev.tekton.event.plugin.step.failed.v1
-dev.tekton.event.plugin.step.succeeded.v1
-dev.tekton.event.plugin.step.skipped.v1
+tom24d.event.plugin.step.started.v1  
+tom24d.event.plugin.step.failed.v1
+tom24d.event.plugin.step.succeeded.v1
+tom24d.event.plugin.step.skipped.v1
 ```
 
 When it detects the state for any emission, it gathers its corresponding defined information such as 
@@ -66,14 +66,11 @@ The example of CloudEvent is:
  Validation: valid
  Context Attributes,
    specversion: 1.0
-   type: dev.tekton.event.plugin.step.succeeded.v1
+   type: tom24d.event.plugin.step.succeeded.v1
    source: github.com/tom24d/step-observe-controller
-   id: 50df8d70-8c11-4cd4-8fdf-3aa4cb287408-unnamed-0-dev.tekton.event.plugin.step.succeeded.v1
+   id: 50df8d70-8c11-4cd4-8fdf-3aa4cb287408-unnamed-0-tom24d.event.plugin.step.succeeded.v1
    time: 2020-08-12T12:07:54Z
    datacontenttype: application/json
- Extensions,
-   knativearrivaltime: 2020-08-12T12:07:55.3392277Z
-   knativehistory: inmemorychannel-kne-trigger-kn-channel.test-event-assertion-success-fail-skip-skip-in-memory-chan7f5q7.svc.cluster.local
  Data,
    {
      "podRef": {

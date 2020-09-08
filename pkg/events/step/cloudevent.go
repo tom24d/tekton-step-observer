@@ -23,10 +23,10 @@ const (
 type TektonPluginEventType string
 
 const (
-	CloudEventTypeStepStarted   TektonPluginEventType = "dev.tekton.event.plugin.step.started.v1"
-	CloudEventTypeStepFailed    TektonPluginEventType = "dev.tekton.event.plugin.step.failed.v1"
-	CloudEventTypeStepSucceeded TektonPluginEventType = "dev.tekton.event.plugin.step.succeeded.v1"
-	CloudEventTypeStepSkipped   TektonPluginEventType = "dev.tekton.event.plugin.step.skipped.v1"
+	CloudEventTypeStepStarted   TektonPluginEventType = "tom24d.event.plugin.step.started.v1"
+	CloudEventTypeStepFailed    TektonPluginEventType = "tom24d.event.plugin.step.failed.v1"
+	CloudEventTypeStepSucceeded TektonPluginEventType = "tom24d.event.plugin.step.succeeded.v1"
+	CloudEventTypeStepSkipped   TektonPluginEventType = "tom24d.event.plugin.step.skipped.v1"
 )
 
 func (c TektonPluginEventType) String() string {
