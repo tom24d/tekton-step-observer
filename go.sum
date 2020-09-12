@@ -986,12 +986,12 @@ github.com/syndtr/gocapability v0.0.0-20170704070218-db04d3cc01c8/go.mod h1:hkRG
 github.com/tdakkota/asciicheck v0.0.0-20200416190851-d7f85be797a2/go.mod h1:yHp0ai0Z9gUljN3o0xMhYJnH/IcvkdTBOX2fmJ93JEM=
 github.com/tdakkota/asciicheck v0.0.0-20200416200610-e657995f937b/go.mod h1:yHp0ai0Z9gUljN3o0xMhYJnH/IcvkdTBOX2fmJ93JEM=
 github.com/tektoncd/pipeline v0.11.0/go.mod h1:hlkH32S92+/UODROH0dmxzyuMxfRFp/Nc3e29MewLn8=
-github.com/tektoncd/pipeline v0.15.1-0.20200904132113-bf4d14d32dd4 h1:QVkTNXDAnjXo+G2ITD7QQwyEGp2BY26Occec2Yk706E=
-github.com/tektoncd/pipeline v0.15.1-0.20200904132113-bf4d14d32dd4/go.mod h1:5vn2IJH46ntWTKLkwNbtZNd38FYkNP0cBtu5sgqm5xA=
+github.com/tektoncd/pipeline v0.16.1-0.20200911181622-204a4038af48 h1:MjSaK/LAk353iaZ/gw+uRIPF3vYpVKWlFEltUiSCc34=
+github.com/tektoncd/pipeline v0.16.1-0.20200911181622-204a4038af48/go.mod h1:5vn2IJH46ntWTKLkwNbtZNd38FYkNP0cBtu5sgqm5xA=
 github.com/tektoncd/plumbing v0.0.0-20200217163359-cd0db6e567d2/go.mod h1:QZHgU07PRBTRF6N57w4+ApRu8OgfYLFNqCDlfEZaD9Y=
 github.com/tektoncd/plumbing v0.0.0-20200430135134-e53521e1d887/go.mod h1:cZPJIeTIoP7UPTxQyTQLs7VE1TiXJSNj0te+If4Q+jI=
-github.com/tektoncd/plumbing v0.0.0-20200904091413-381152d985ea h1:TRmyCW2jWXcmNv8c1JB1D/Ft3fcPU8jTyFdBKDGrvDY=
-github.com/tektoncd/plumbing v0.0.0-20200904091413-381152d985ea/go.mod h1:cZPJIeTIoP7UPTxQyTQLs7VE1TiXJSNj0te+If4Q+jI=
+github.com/tektoncd/plumbing v0.0.0-20200911160222-4171d45870bc h1:2Gh3eHjoN6dDQh2CsWASQ+1XoU0rCQ9C8dmztZQTcCQ=
+github.com/tektoncd/plumbing v0.0.0-20200911160222-4171d45870bc/go.mod h1:cZPJIeTIoP7UPTxQyTQLs7VE1TiXJSNj0te+If4Q+jI=
 github.com/tektoncd/plumbing/pipelinerun-logs v0.0.0-20191206114338-712d544c2c21/go.mod h1:S62EUWtqmejjJgUMOGB1CCCHRp6C706laH06BoALkzU=
 github.com/tetafro/godot v0.3.7/go.mod h1:/7NLHhv08H1+8DNj0MElpAACw1ajsCuf3TKNQxA5S+0=
 github.com/tetafro/godot v0.4.2/go.mod h1:/7NLHhv08H1+8DNj0MElpAACw1ajsCuf3TKNQxA5S+0=
