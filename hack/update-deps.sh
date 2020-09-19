@@ -33,7 +33,7 @@ VERSION_KNATIVE="release-0.16"
 # The list of dependencies that we track at HEAD and periodically
 # float forward in this repository.
 FLOATING_DEPS=(
-  "knative.dev/pkg@${VERSION_KNATIVE}"
+  "knative.dev/pkg@v0.0.0-20200831162708-14fb2347fb77"
   "knative.dev/eventing@${VERSION_KNATIVE}"
   "github.com/tektoncd/plumbing@${VERSION_TEKTON}"
   "github.com/tektoncd/pipeline@${VERSION_TEKTON}"
