@@ -30,12 +30,17 @@ const (
 )
 
 type Reconciler struct {
+	// LeaderAwareFuncs is inlined to help us implement reconciler.LeaderAware
+	reconciler.LeaderAwareFuncs
+
 	taskRunLister    listers.TaskRunLister
 	pipelineClient   clientset.Interface
 	kubeClientSet    kubernetes.Interface
 	configStore      reconciler.ConfigStore
 	cloudEventClient cloudevent.CEClient
 }
+
+var _ reconciler.LeaderAware = (*Reconciler)(nil)
 
 // Reconcile reconciles taskrun resource for emitting CloudEvents.
 // This reconciler does not change any spec/status. All info is stored as json in the metadata.annotation
