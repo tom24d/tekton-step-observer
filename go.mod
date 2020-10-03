@@ -6,8 +6,8 @@ require (
 	github.com/cloudevents/sdk-go/v2 v2.2.0
 	github.com/google/go-cmp v0.5.2
 	github.com/hashicorp/go-multierror v1.1.0
-	github.com/tektoncd/pipeline v0.16.1-0.20200925132450-434c47daaf62
-	github.com/tektoncd/plumbing v0.0.0-20200924115449-52639069bf41
+	github.com/tektoncd/pipeline v0.16.1-0.20201002230453-cfe2fe04a9af
+	github.com/tektoncd/plumbing v0.0.0-20201002151353-b086b5c7ad03
 	go.uber.org/zap v1.15.0
 	k8s.io/api v0.18.7-rc.0
 	k8s.io/apimachinery v0.19.0

@@ -241,7 +241,7 @@ github.com/spf13/pflag
 # github.com/stretchr/testify v1.5.1
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/tektoncd/pipeline v0.16.1-0.20200925132450-434c47daaf62
+# github.com/tektoncd/pipeline v0.16.1-0.20201002230453-cfe2fe04a9af
 ## explicit
 github.com/tektoncd/pipeline/pkg/apis/config
 github.com/tektoncd/pipeline/pkg/apis/pipeline
@@ -304,7 +304,7 @@ github.com/tektoncd/pipeline/pkg/reconciler/pipeline/dag
 github.com/tektoncd/pipeline/pkg/substitution
 github.com/tektoncd/pipeline/test
 github.com/tektoncd/pipeline/test/diff
-# github.com/tektoncd/plumbing v0.0.0-20200924115449-52639069bf41
+# github.com/tektoncd/plumbing v0.0.0-20201002151353-b086b5c7ad03
 ## explicit
 github.com/tektoncd/plumbing
 github.com/tektoncd/plumbing/scripts
